@@ -112,7 +112,7 @@ public class Expressions {
 
 		int convMegaBytes = kiloBytes / MB_TO_KB;
 		int convKiloBytes = kiloBytes % MB_TO_KB;
-8
+
 		System.out.println("" + kiloBytes + " KB = " + convMegaBytes + " MB and " + convKiloBytes + " KB");
 	}
 
