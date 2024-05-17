@@ -1,10 +1,10 @@
-package oop;
+package inheritance;
 
-public class InheritanceSalariedEmployee extends InheritanceEmployee {
+public class SalariedEmployee extends Employee {
 	private double annualSalary;
 	private boolean isRetired;
 
-	public InheritanceSalariedEmployee(String name, String birthDate, long employeeId, String hireDate,
+	public SalariedEmployee(String name, String birthDate, long employeeId, String hireDate,
 			long annualSalary) {
 		super(name, birthDate, employeeId, hireDate);
 		this.annualSalary = annualSalary;

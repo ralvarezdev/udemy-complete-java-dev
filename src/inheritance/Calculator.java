@@ -1,10 +1,10 @@
-package oop;
+package inheritance;
 
-public class InheritanceCalculator {
-	private InheritanceFloor floor;
-	private InheritanceCarpet carpet;
+public class Calculator {
+	private Floor floor;
+	private Carpet carpet;
 
-	public InheritanceCalculator(InheritanceFloor floor, InheritanceCarpet carpet) {
+	public Calculator(Floor floor, Carpet carpet) {
 		this.floor = floor;
 		this.carpet = carpet;
 	}

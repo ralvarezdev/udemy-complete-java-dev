@@ -1,21 +1,21 @@
-package oop;
+package inheritance;
 
-public class InheritanceCustomer {
+public class Customer {
 	private String name;
 	private double creditLimit;
 	private String emailAddress;
 
-	public InheritanceCustomer(String name, double creditLimit, String emailAddress) {
+	public Customer(String name, double creditLimit, String emailAddress) {
 		this.name = name;
 		this.creditLimit = creditLimit;
 		this.emailAddress = emailAddress;
 	}
 
-	public InheritanceCustomer(String name, String emailAddress) {
+	public Customer(String name, String emailAddress) {
 		this(name, 100, emailAddress);
 	}
 
-	public InheritanceCustomer() {
+	public Customer() {
 		this("Ronald", "ronald@gmail.com");
 	}
 

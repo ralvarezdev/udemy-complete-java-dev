@@ -1,9 +1,9 @@
-package oop;
+package inheritance;
 
-public class InheritanceCuboid extends InheritanceRectangle {
+public class Cuboid extends Rectangle {
 	private double height;
 
-	public InheritanceCuboid(double width, double length, double height) {
+	public Cuboid(double width, double length, double height) {
 		super(width, length);
 		this.height = height < 0 ? 0 : height;
 	}

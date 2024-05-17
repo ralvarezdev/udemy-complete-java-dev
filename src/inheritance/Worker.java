@@ -1,11 +1,11 @@
-package oop;
+package inheritance;
 
-public class InheritanceWorker {
+public class Worker {
 	protected String name;
 	protected String birthDate; // MM-DD-YYYY
 	protected String endDate;
 
-	public InheritanceWorker(String name, String birthDate) {
+	public Worker(String name, String birthDate) {
 		this.name = name;
 		this.birthDate = birthDate;
 	}

@@ -1,6 +1,6 @@
-package oop;
+package inheritance;
 
-public class InheritanceSimpleCalculator {
+public class SimpleCalculator {
 	private double firstNumber;
 	private double secondNumber;
 

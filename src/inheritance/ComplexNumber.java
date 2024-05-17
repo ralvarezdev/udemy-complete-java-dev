@@ -1,10 +1,10 @@
-package oop;
+package inheritance;
 
-public class InheritanceComplexNumber {
+public class ComplexNumber {
 	private double real;
 	private double imaginary;
 
-	public InheritanceComplexNumber(double real, double imaginary) {
+	public ComplexNumber(double real, double imaginary) {
 		this.real = real;
 		this.imaginary = imaginary;
 	}
@@ -22,7 +22,7 @@ public class InheritanceComplexNumber {
 		this.imaginary += imaginary;
 	}
 
-	public void add(InheritanceComplexNumber complexNumber) {
+	public void add(ComplexNumber complexNumber) {
 		this.real += complexNumber.getReal();
 		this.imaginary += complexNumber.getImaginary();
 	}
@@ -32,7 +32,7 @@ public class InheritanceComplexNumber {
 		this.imaginary -= imaginary;
 	}
 
-	public void subtract(InheritanceComplexNumber complexNumber) {
+	public void subtract(ComplexNumber complexNumber) {
 		this.real -= complexNumber.getReal();
 		this.imaginary -= complexNumber.getImaginary();
 	}

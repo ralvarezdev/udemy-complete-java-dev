@@ -1,13 +1,13 @@
-package oop;
+package inheritance;
 
-public class InheritanceBankAccount {
+public class BankAccount {
 	private int accountNumber;
 	private double balance;
 	private String customerName;
 	private String emailAddress;
 	private int phoneNumber;
 
-	public InheritanceBankAccount(int accountNumber, double balance, String customerName, String emailAddress,
+	public BankAccount(int accountNumber, double balance, String customerName, String emailAddress,
 			int phoneNumber) {
 		this.accountNumber = accountNumber;
 		this.balance = balance;

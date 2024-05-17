@@ -1,14 +1,14 @@
-package oop;
+package inheritance;
 
-public class InheritancePoint {
+public class Point {
 	private int x;
 	private int y;
 
-	public InheritancePoint() {
+	public Point() {
 		return;
 	}
 
-	public InheritancePoint(int x, int y) {
+	public Point(int x, int y) {
 		setX(x);
 		setY(y);
 	}
@@ -33,7 +33,7 @@ public class InheritancePoint {
 		return distance(0, 0);
 	}
 
-	public double distance(InheritancePoint point) {
+	public double distance(Point point) {
 		return distance(point.getX(), point.getY());
 	}
 

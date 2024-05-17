@@ -1,10 +1,10 @@
-package oop;
+package inheritance;
 
-public class InheritanceFloor {
+public class Floor {
 	private double width;
 	private double length;
 
-	public InheritanceFloor(double width, double length) {
+	public Floor(double width, double length) {
 		this.width = width < 0 ? 0 : width;
 		this.length = length < 0 ? 0 : length;
 	}

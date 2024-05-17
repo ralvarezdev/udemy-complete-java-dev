@@ -1,6 +1,6 @@
-package oop;
+package inheritance;
 
-public class InheritancePerson {
+public class Person {
 	private String firstName;
 	private String lastName;
 	private int age;

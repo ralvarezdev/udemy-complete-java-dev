@@ -1,10 +1,10 @@
-package oop;
+package inheritance;
 
-public class InheritanceRectangle {
+public class Rectangle {
 	private double length;
 	private double width;
 
-	public InheritanceRectangle(double width, double length) {
+	public Rectangle(double width, double length) {
 		this.width = width < 0 ? 0 : width;
 		this.length = length < 0 ? 0 : length;
 	}

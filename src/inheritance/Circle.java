@@ -1,9 +1,9 @@
-package oop;
+package inheritance;
 
-public class InheritanceCircle {
+public class Circle {
 	private double radius;
 
-	public InheritanceCircle(double radius) {
+	public Circle(double radius) {
 		this.radius = radius < 0 ? 0 : radius;
 	}
 

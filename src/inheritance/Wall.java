@@ -1,14 +1,14 @@
-package oop;
+package inheritance;
 
-public class InheritanceWall {
+public class Wall {
 	private double width;
 	private double height;
 
-	public InheritanceWall() {
+	public Wall() {
 		return;
 	}
 
-	public InheritanceWall(double width, double height) {
+	public Wall(double width, double height) {
 		setWidth(width);
 		setHeight(height);
 	}

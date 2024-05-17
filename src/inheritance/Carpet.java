@@ -1,9 +1,9 @@
-package oop;
+package inheritance;
 
-public class InheritanceCarpet {
+public class Carpet {
 	private double cost;
 
-	public InheritanceCarpet(double cost) {
+	public Carpet(double cost) {
 		this.cost = cost < 0 ? 0 : cost;
 	}
 
