@@ -505,7 +505,7 @@ public class ControlFlow {
 		String input;
 
 		while (validCounter < 5) {
-			System.out.print("Enter numbe #" + (validCounter + 1) + ": ");
+			System.out.print("Enter number #" + (validCounter + 1) + ": ");
 			input = scanner.nextLine();
 
 			try {
@@ -517,6 +517,7 @@ public class ControlFlow {
 			sum += number;
 			validCounter++;
 		}
+		scanner.close();
 
 		System.out.println("\nSum of Five Numbers = " + sum);
 	}
@@ -550,6 +551,7 @@ public class ControlFlow {
 
 			iter++;
 		}
+		scanner.close();
 
 		if (iter > 0) {
 			System.out.println("\nMin Number: " + min);
@@ -576,6 +578,7 @@ public class ControlFlow {
 			sum += number;
 			counter++;
 		}
+		scanner.close();
 
 		long avg = Math.round((double) sum / counter);
 
