@@ -3,6 +3,7 @@ package list;
 import java.util.ArrayList;
 
 public class MobilePhone {
+	@SuppressWarnings("unused")
 	private String myNumber;
 	private ArrayList<Contact> myContacts;
 

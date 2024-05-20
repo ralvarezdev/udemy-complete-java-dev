@@ -7,8 +7,7 @@ import java.util.Scanner;
 import util.Console;
 
 public class LinkedListChallenge {
-	private final static String INIT = "i", ADD = "a", FORWARD = "f", BACKWARD = "b", LIST = "l", MENU = "m",
-			QUIT = "q";
+	private final static String INIT = "i", ADD = "a", FORWARD = "f", BACKWARD = "b", LIST = "l", QUIT = "q";
 
 	private LinkedList<Place> places;
 	private ListIterator<Place> iter;
@@ -53,6 +52,8 @@ public class LinkedListChallenge {
 			case QUIT -> quit = true;
 			}
 		}
+
+		scanner.close();
 	}
 
 	private static void printActions() {
@@ -78,6 +79,7 @@ public class LinkedListChallenge {
 	}
 
 	public static void addFirstPlace(LinkedListChallenge places) {
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 
 		places.clearPlaces();
@@ -91,6 +93,7 @@ public class LinkedListChallenge {
 	}
 
 	public void addPlace() {
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 
 		String name, input;

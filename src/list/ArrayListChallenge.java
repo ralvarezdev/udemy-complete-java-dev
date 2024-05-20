@@ -62,6 +62,7 @@ public class ArrayListChallenge {
 	}
 
 	private static void addItems(ArrayList<String> items) {
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 
 		System.out.print("Enter Item(s) to Add: ");
@@ -75,6 +76,7 @@ public class ArrayListChallenge {
 	}
 
 	private static void removeItems(ArrayList<String> items) {
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 
 		System.out.print("Enter Item(s) to Remove: ");

@@ -8,6 +8,7 @@ public class ArrayChallenge {
 	private final static int MAX_RANGE = 1000;
 
 	private int[] randomNumbers;
+	@SuppressWarnings("unused")
 	private int nNumbers;
 
 	public static void main(String[] args) {

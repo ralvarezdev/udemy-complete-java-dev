@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Album {
+	@SuppressWarnings("unused")
 	private String name;
+	@SuppressWarnings("unused")
 	private String artist;
 	private ArrayList<Song> songs;
 

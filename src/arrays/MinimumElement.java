@@ -3,6 +3,7 @@ package arrays;
 import java.util.Scanner;
 
 public class MinimumElement {
+	@SuppressWarnings("unused")
 	private static int readInteger() {
 		System.out.print("Enter a Number: ");
 
@@ -13,6 +14,7 @@ public class MinimumElement {
 		return number;
 	}
 
+	@SuppressWarnings("unused")
 	private static int[] readElements(int elements) {
 		Scanner scanner = new Scanner(System.in);
 		int[] numbers = new int[elements];
@@ -27,6 +29,7 @@ public class MinimumElement {
 		return numbers;
 	}
 
+	@SuppressWarnings("unused")
 	private static int findMin(int[] numbers) {
 		int minNumber = Integer.MAX_VALUE;
 

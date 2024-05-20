@@ -25,6 +25,7 @@ public class Console {
 	}
 
 	public static void pressEnterToCont() {
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 
 		System.out.print("Press ENTER to Continue: ");

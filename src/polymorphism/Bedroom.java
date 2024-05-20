@@ -1,8 +1,11 @@
 package polymorphism;
 
 public class Bedroom {
+	@SuppressWarnings("unused")
 	private String name;
+	@SuppressWarnings("unused")
 	private Wall wall1, wall2, wall3, wall4;
+	@SuppressWarnings("unused")
 	private Ceiling ceiling;
 	private Bed bed;
 	private Lamp lamp;

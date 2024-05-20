@@ -3,6 +3,7 @@ package arrays;
 import java.util.Arrays;
 
 public class ReverseArray {
+	@SuppressWarnings("unused")
 	private static void reverse(int[] array) {
 		int length = array.length;
 		int temp;

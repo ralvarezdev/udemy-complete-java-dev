@@ -3,6 +3,7 @@ package list;
 import java.util.ArrayList;
 
 public class Bank {
+	@SuppressWarnings("unused")
 	private String name;
 	private ArrayList<Branch> branches;
 
