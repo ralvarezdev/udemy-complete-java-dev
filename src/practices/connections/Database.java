@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import practices.MissingPropertyException;
+
 class Database {
 	private static boolean loadedProps = false;
 	private static String DBHOST;

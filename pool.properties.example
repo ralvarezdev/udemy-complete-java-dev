@@ -1,0 +1,4 @@
+# Pool practice properties
+INIT_CONNS=
+INCR_CONNS=
+MAX_CONNS=

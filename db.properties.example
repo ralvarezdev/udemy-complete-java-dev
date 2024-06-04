@@ -1,0 +1,6 @@
+# Database connection details example. Should be placed inside 'bin' directory
+DBHOST=
+PORT=
+DBNAME=
+USER=
+DBPASS=

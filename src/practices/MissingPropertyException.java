@@ -1,4 +1,4 @@
-package practices.connections;
+package practices;
 
 public class MissingPropertyException extends Exception {
 	public MissingPropertyException(String errorMessage) {
