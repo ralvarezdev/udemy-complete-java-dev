@@ -21,9 +21,9 @@ public enum Pool {
 
 	private Pool() {
 		try {
-			String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-			String dbPropsPath = rootPath + "db.properties";
-			String poolPropsPath = rootPath + "pool.properties";
+			ClassLoader context = Thread.currentThread().getContextClassLoader();
+			String dbPropsPath = context.getResource("db.properties").getPath();
+			String poolPropsPath = context.getResource("pool.properties").getPath();
 
 			// Open connection to 'db.properties' and 'pool.properties' files
 			Properties dbProps = new Properties();
@@ -64,6 +64,7 @@ public enum Pool {
 		// Look for PostgreSQL Driver
 		try {
 			Class.forName("org.postgresql.Driver");
+
 		} catch (ClassNotFoundException e) {
 			System.err.println(e);
 			System.exit(-1);
@@ -74,16 +75,17 @@ public enum Pool {
 		increasePoolSize(INIT_CONNS);
 	}
 
-	Pool getInstance() {
+	public static Pool getInstance() {
 		return INSTANCE;
 	}
 
 	private synchronized boolean increasePoolSize(int incrConns) {
-		if (currMaxSize + INCR_CONNS > MAX_CONNS) {
-			System.out.println("Max pool size reached...");
+		if (currMaxSize + incrConns > MAX_CONNS) {
+			// System.out.println("Max pool size reached...");
 			return false;
 		}
 
+		System.out.println("Increasing pool size from %d to %d...".formatted(currMaxSize, currMaxSize + incrConns));
 		for (int i = 0; i < incrConns; i++)
 			conns.add(new Conn(config, AUTO_COMMIT));
 
@@ -99,7 +101,7 @@ public enum Pool {
 		return this.conns.size();
 	}
 
-	synchronized Conn getConnection() {
+	public synchronized Conn getConnection() {
 		int size = getSize();
 
 		if (size > 0)
@@ -115,15 +117,17 @@ public enum Pool {
 					System.err.println(e);
 					return null;
 				}
+		size = getSize();
 
 		return this.conns.remove(size - 1);
 	}
 
-	synchronized void putConnection(Conn connection) {
+	public synchronized void putConnection(Conn connection) {
 		conns.add(connection);
+		notifyAll();
 	}
 
-	synchronized void disconnectAll() {
+	public synchronized void disconnectAll() {
 		for (Conn conn : conns) {
 			conn.disconnect();
 			currMaxSize--;

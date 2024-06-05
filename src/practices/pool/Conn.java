@@ -6,11 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 class Conn {
 	private Connection connection;
 
-	private final static String CLOSED_CONN = "Connection has already been closed...";
 	private final static String INVALID_CONN = "Connection hasn't been initialized...";
 
 	private final static int VALID_DELAY = 5;
@@ -18,7 +19,7 @@ class Conn {
 	private final boolean AUTO_COMMIT;
 	private final DatabaseConfig config;
 
-	Conn(DatabaseConfig config, boolean autoCommit) {
+	public Conn(DatabaseConfig config, boolean autoCommit) {
 		connect(config, autoCommit);
 		this.AUTO_COMMIT = autoCommit;
 		this.config = config;
@@ -40,7 +41,7 @@ class Conn {
 		}
 	}
 
-	synchronized boolean commit() {
+	public synchronized boolean commit() {
 		if (isNull())
 			return false;
 
@@ -55,7 +56,7 @@ class Conn {
 		return true;
 	}
 
-	synchronized boolean rollback() {
+	public synchronized boolean rollback() {
 		if (isNull())
 			return false;
 
@@ -70,15 +71,10 @@ class Conn {
 		return true;
 	}
 
-	synchronized void disconnect() {
-		if (isNull())
-			return;
-
+	public synchronized void disconnect() {
 		try {
-			if (connection.isClosed()) {
-				System.err.println(CLOSED_CONN);
+			if (isClosed())
 				return;
-			}
 
 			connection.close();
 			System.out.println("Connection successfully closed...");
@@ -89,7 +85,7 @@ class Conn {
 		}
 	}
 
-	synchronized boolean isNull() {
+	public synchronized boolean isNull() {
 		if (connection == null) {
 			System.err.println(INVALID_CONN);
 			return true;
@@ -97,7 +93,7 @@ class Conn {
 		return false;
 	}
 
-	synchronized boolean isClosed() {
+	public synchronized boolean isClosed() {
 		if (isNull())
 			return true;
 
@@ -110,9 +106,9 @@ class Conn {
 		}
 	}
 
-	synchronized boolean isValid() {
+	public synchronized boolean isValid() {
 		if (isNull())
-			return true;
+			return false;
 
 		try {
 			return connection.isValid(VALID_DELAY);
@@ -161,7 +157,7 @@ class Conn {
 		}
 	}
 
-	synchronized Integer executeUpdate(String sql) {
+	public synchronized Integer executeUpdate(String sql) {
 		checkConnection();
 
 		Statement statement = null;
@@ -180,7 +176,7 @@ class Conn {
 		return result;
 	}
 
-	synchronized Integer executeUpdate(String sql, String... params) {
+	public synchronized Integer executeUpdate(String sql, String... params) {
 		checkConnection();
 
 		PreparedStatement statement = null;
@@ -200,9 +196,10 @@ class Conn {
 		return result;
 	}
 
-	ResultSet executeQuery(String sql) {
+	public <T> List<T> executeQuery(String sql, ResultSetFunction<T> func) {
 		checkConnection();
 
+		LinkedList<T> list = new LinkedList<>();
 		Statement statement = null;
 		ResultSet result = null;
 
@@ -210,17 +207,23 @@ class Conn {
 			statement = connection.createStatement();
 			result = statement.executeQuery(sql);
 
+			while (result.next())
+				list.add(func.apply(result));
+
+			result.close();
+			closeStatement(statement);
+
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
 
-		closeStatement(statement);
-		return result;
+		return list;
 	}
 
-	ResultSet executeQuery(String sql, String... params) {
+	public <T> List<T> executeQuery(String sql, ResultSetFunction<T> func, String... params) {
 		checkConnection();
 
+		LinkedList<T> list = new LinkedList<>();
 		PreparedStatement statement = null;
 		ResultSet result = null;
 
@@ -229,11 +232,16 @@ class Conn {
 			setPreparedStatement(statement, params);
 			result = statement.executeQuery();
 
+			while (result.next())
+				list.add(func.apply(result));
+
+			result.close();
+			closeStatement(statement);
+
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
 
-		closeStatement(statement);
-		return result;
+		return list;
 	}
 }

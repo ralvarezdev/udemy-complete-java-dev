@@ -1,8 +1,5 @@
 package practices.pool;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 public class PoolManager {
@@ -51,39 +48,14 @@ public class PoolManager {
 	}
 
 	public synchronized <T> List<T> executeQuery(String sql, ResultSetFunction<T> func) {
-		LinkedList<T> list = null;
-
 		if (!isNull())
-			try {
-				list = new LinkedList<>();
-				ResultSet result = connection.executeQuery(sql);
-
-				while (result.next())
-					list.add(func.apply(result));
-
-			} catch (SQLException e) {
-				System.err.println(e);
-			}
-
-		return list;
-	}
-
-	public synchronized <T> List<T> executeQuery(String sql, ResultSetFunction<T> func, String... params) {
-		LinkedList<T> list = null;
-
-		if (!isNull())
-			try {
-				list = new LinkedList<>();
-				ResultSet result = connection.executeQuery(sql, params);
-
-				while (result.next())
-					list.add(func.apply(result));
-
-			} catch (SQLException e) {
-				System.err.println(e);
-			}
-
+			return connection.executeQuery(sql, func);
 		return null;
 	}
 
+	public synchronized <T> List<T> executeQuery(String sql, ResultSetFunction<T> func, String... params) {
+		if (!isNull())
+			return connection.executeQuery(sql, func, params);
+		return null;
+	}
 }

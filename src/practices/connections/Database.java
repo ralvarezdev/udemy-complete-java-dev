@@ -26,11 +26,11 @@ class Database {
 		if (!connected) {
 			if (!loadedProps) {
 				try {
-					String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-					String appConfigPath = rootPath + "db.properties";
+					String dbPropertiesPath = Thread.currentThread().getContextClassLoader()
+							.getResource("db.properties").getPath();
 
 					Properties appProps = new Properties();
-					appProps.load(new FileInputStream(appConfigPath));
+					appProps.load(new FileInputStream(dbPropertiesPath));
 
 					DBHOST = appProps.getProperty("DBHOST");
 					PORT = appProps.getProperty("PORT");
