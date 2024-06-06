@@ -1,6 +1,7 @@
 package practices.connections;
 
 import java.io.FileInputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,9 +10,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import practices.MissingPropertiesFileException;
 import practices.MissingPropertyException;
 
 class Database {
+	private final static String DB_PROPS_FILENAME = "db.properties";
+
 	private static boolean loadedProps = false;
 	private static String DBHOST;
 	private static String PORT;
@@ -26,8 +30,11 @@ class Database {
 		if (!connected) {
 			if (!loadedProps) {
 				try {
-					String dbPropertiesPath = Thread.currentThread().getContextClassLoader()
-							.getResource("db.properties").getPath();
+					URL dbPropsResource = Thread.currentThread().getContextClassLoader().getResource(DB_PROPS_FILENAME);
+					if (dbPropsResource == null)
+						throw new MissingPropertiesFileException("Missing %s file.".formatted(DB_PROPS_FILENAME));
+
+					String dbPropertiesPath = dbPropsResource.getPath();
 
 					Properties appProps = new Properties();
 					appProps.load(new FileInputStream(dbPropertiesPath));

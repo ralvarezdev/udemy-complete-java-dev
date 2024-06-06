@@ -1,16 +1,18 @@
 package practices.pool;
 
 import java.io.FileInputStream;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import practices.MissingPropertiesFileException;
 import practices.MissingPropertyException;
 
 public enum Pool {
 	INSTANCE;
 
-	// private final int LOCK_DELAY = 100;
-	// private final TimeUnit LOCK_TIMEUNIT = TimeUnit.SECONDS;
+	private final static String DB_PROPS_FILENAME = "db.properties";
+	private final static String POOL_PROPS_FILENAME = "pool.properties";
 
 	private DatabaseConfig config;
 	private int INIT_CONNS, INCR_CONNS, MAX_CONNS;
@@ -22,8 +24,17 @@ public enum Pool {
 	private Pool() {
 		try {
 			ClassLoader context = Thread.currentThread().getContextClassLoader();
-			String dbPropsPath = context.getResource("db.properties").getPath();
-			String poolPropsPath = context.getResource("pool.properties").getPath();
+			URL dbPropsResource = context.getResource(DB_PROPS_FILENAME);
+			URL poolPropsResource = context.getResource(POOL_PROPS_FILENAME);
+
+			if (dbPropsResource == null)
+				throw new MissingPropertiesFileException("Missing %s file.".formatted(DB_PROPS_FILENAME));
+
+			if (poolPropsResource == null)
+				throw new MissingPropertiesFileException("Missing %s file.".formatted(POOL_PROPS_FILENAME));
+
+			String dbPropsPath = dbPropsResource.getPath();
+			String poolPropsPath = poolPropsResource.getPath();
 
 			// Open connection to 'db.properties' and 'pool.properties' files
 			Properties dbProps = new Properties();
