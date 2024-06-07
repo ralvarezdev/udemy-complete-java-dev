@@ -9,5 +9,6 @@ public enum Texts {
 
 	public final static String NOVICE_MODE = "NOVICE";
 	public final static String NORMAL_MODE = "NORMAL";
+	public final static String ADVANCED_MODE = "ADVANCED";
 	public final static String EXPERT_MODE = "EXPERT";
 }

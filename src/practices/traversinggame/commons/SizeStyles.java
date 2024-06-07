@@ -15,6 +15,8 @@ public enum SizeStyles {
 	public static Integer getBorderRadiusSize(SizeStyles borderSize) {
 		return switch (borderSize) {
 		case BIG -> Sizes.BIG_BORDER_RADIUS;
+		case MEDIUM -> Sizes.MEDIUM_BORDER_RADIUS;
+		case SMALL -> Sizes.SMALL_BORDER_RADIUS;
 		default -> null;
 		};
 	}

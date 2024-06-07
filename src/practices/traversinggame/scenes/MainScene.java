@@ -1,5 +1,7 @@
 package practices.traversinggame.scenes;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import practices.MissingResourceFileException;
 import practices.traversinggame.commons.Assets;
 import practices.traversinggame.commons.ColorStyles;
@@ -20,12 +23,41 @@ import practices.traversinggame.managers.ResourceManager;
 import practices.traversinggame.setters.SetLayout;
 import practices.traversinggame.setters.SetNode;
 import practices.traversinggame.setters.SetScene;
+import practices.traversinggame.setters.SetStage;
 
 public class MainScene {
 	// Main image
 	private final static int MAIN_IMAGE_HEIGHT = 200;
 
-	public static Scene getScene() throws MissingResourceFileException {
+	private static <T extends Event> EventHandler<T> getOnMatrixSceneClicked(Stage mainStage, MatrixSceneTypes type) {
+		return (param) -> {
+			try {
+				Stage matrixStage = new Stage();
+
+				matrixStage.setTitle(MatrixSceneTypes.getTitle(type));
+				SetStage.setWindowIcon(matrixStage);
+
+				Scene matrixScene = MatrixSceneTypes.getScene(type);
+				matrixStage.setScene(matrixScene);
+
+				double minWidth = MatrixSceneTypes.getMinWidth(type);
+				double minHeight = MatrixSceneTypes.getMinHeight(type);
+
+				matrixStage.setOnCloseRequest(innerEvent -> mainStage.show());
+
+				mainStage.hide();
+				matrixStage.show();
+
+				SetStage.setDiffMinSize(matrixStage, matrixScene, minWidth, minHeight);
+
+			} catch (MissingResourceFileException e) {
+				System.err.println(e);
+				System.exit(-1);
+			}
+		};
+	}
+
+	public static Scene getScene(Stage stage) throws MissingResourceFileException {
 		// Title label
 		Label titleLabel = new Label(Texts.TITLE);
 		SetNode.setLabelStyle(titleLabel, SizeStyles.BIG, ColorStyles.DARK_FONT);
@@ -39,11 +71,12 @@ public class MainScene {
 		// Buttons
 		Button noviceMode = new Button(Texts.NOVICE_MODE);
 		Button normalMode = new Button(Texts.NORMAL_MODE);
+		Button advancedMode = new Button(Texts.ADVANCED_MODE);
 		Button expertMode = new Button(Texts.EXPERT_MODE);
-		Button[] btns = new Button[] { noviceMode, normalMode, expertMode };
+		Button[] btns = new Button[] { noviceMode, normalMode, advancedMode, expertMode };
 
 		// Vertical box aligned at the center
-		VBox centerVBox = new VBox(mainImageView, titleLabel, noviceMode, normalMode, expertMode);
+		VBox centerVBox = new VBox(mainImageView, titleLabel, noviceMode, normalMode, advancedMode, expertMode);
 		centerVBox.setAlignment(Pos.CENTER);
 
 		// Add title margin
@@ -60,9 +93,9 @@ public class MainScene {
 			btn.setPrefSize(Sizes.BIG_BTN_WIDTH, Sizes.BIG_BTN_HEIGHT);
 			VBox.setMargin(btn, CommonNodes.getBottomInset(Sizes.BTN_MARGIN_BOTTOM));
 
-			// Set button styles on events
-			btn.setOnMouseExited(e -> btn.setStyle(btnStyle));
-			btn.setOnMouseEntered(e -> btn.setStyle(btnFocusStyle));
+			// Set buttons on mouse entered and exited events
+			btn.setOnMouseExited(event -> btn.setStyle(btnStyle));
+			btn.setOnMouseEntered(event -> btn.setStyle(btnFocusStyle));
 		}
 
 		// Footer label
@@ -88,6 +121,12 @@ public class MainScene {
 		Scene scene = new Scene(borderPane);
 
 		SetScene.setDefaultStyles(scene);
+
+		// Set buttons on mouse clicked events
+		noviceMode.setOnMouseClicked(getOnMatrixSceneClicked(stage, MatrixSceneTypes.NOVICE));
+		normalMode.setOnMouseClicked(getOnMatrixSceneClicked(stage, MatrixSceneTypes.NORMAL));
+		advancedMode.setOnMouseClicked(getOnMatrixSceneClicked(stage, MatrixSceneTypes.ADVANCED));
+		expertMode.setOnMouseClicked(getOnMatrixSceneClicked(stage, MatrixSceneTypes.EXPERT));
 
 		return scene;
 	}

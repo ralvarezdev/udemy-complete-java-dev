@@ -2,6 +2,7 @@ package practices.traversinggame.setters;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.shape.Rectangle;
 import practices.traversinggame.commons.ColorPalette;
 import practices.traversinggame.commons.ColorStyles;
 import practices.traversinggame.commons.SizeStyles;
@@ -28,7 +29,8 @@ public class SetNode {
 
 		return """
 				-fx-background-radius: %dpx;
-				""".formatted(borderRadius);
+				-fx-border-radius: %s;
+				""".formatted(borderRadius, borderRadius);
 	}
 
 	private static String getBgColorStyle(ColorStyles colorStyle) {
@@ -77,5 +79,17 @@ public class SetNode {
 
 		if (fullStyle != null)
 			btn.setStyle(fullStyle);
+	}
+
+	public static void setRectStyle(Rectangle rect, SizeStyles rectSizeStyle, ColorStyles rectColorStyle) {
+		Integer size = SizeStyles.getBorderRadiusSize(rectSizeStyle);
+
+		if (size != null) {
+			rect.setArcHeight((double) size);
+			rect.setArcWidth((double) size);
+		}
+
+		if (rectColorStyle != null)
+			rect.setFill(ColorStyles.getNodeBgColorPalette(rectColorStyle).getColor());
 	}
 }
