@@ -1,7 +1,8 @@
-package practices.traversinggame;
+package practices.traversinggame.setters;
 
 import javafx.scene.Scene;
 import practices.MissingResourceFileException;
+import practices.traversinggame.managers.ResourceManager;
 
 public class SetScene {
 	public static void setDefaultStyles(Scene scene) throws MissingResourceFileException {

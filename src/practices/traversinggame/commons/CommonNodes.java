@@ -1,4 +1,4 @@
-package practices.traversinggame;
+package practices.traversinggame.commons;
 
 import javafx.geometry.Insets;
 

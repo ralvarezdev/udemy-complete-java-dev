@@ -2,6 +2,9 @@ package practices.traversinggame;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import practices.traversinggame.commons.Texts;
+import practices.traversinggame.scenes.MainScene;
+import practices.traversinggame.setters.SetStage;
 
 public class TraversingGame extends Application {
 
@@ -11,8 +14,8 @@ public class TraversingGame extends Application {
 		try {
 			SetStage.setWindowIcon(stage);
 
-			stage.setTitle(MainScene.getTitle());
-			stage.setScene(MainScene.generateMainScene());
+			stage.setTitle(Texts.TITLE);
+			stage.setScene(MainScene.getScene());
 			stage.show();
 
 		} catch (Exception e) {

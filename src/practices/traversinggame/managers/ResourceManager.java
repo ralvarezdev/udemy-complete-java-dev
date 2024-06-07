@@ -1,4 +1,4 @@
-package practices.traversinggame;
+package practices.traversinggame.managers;
 
 import java.io.InputStream;
 
@@ -8,7 +8,7 @@ public enum ResourceManager {
 	INSTANCE;
 
 	// Paths
-	private final static String RESOURCES_PATH = "resources";
+	private final static String RESOURCES_PATH = "../resources";
 	private final static String ASSETS_PATH = String.join("/", RESOURCES_PATH, "assets");
 	private final static String STYLES_PATH = String.join("/", RESOURCES_PATH, "styles");
 
