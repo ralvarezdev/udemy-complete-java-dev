@@ -16,9 +16,17 @@ public class SetStage {
 		stage.getIcons().add(new Image(icon));
 	}
 
+	public static double getDiffWidth(Stage stage, Scene scene) {
+		return stage.getWidth() - scene.getWidth();
+	}
+
+	public static double getDiffHeight(Stage stage, Scene scene) {
+		return stage.getHeight() - scene.getHeight();
+	}
+
 	public static void setDiffMinSize(Stage stage, Scene scene, double minWidth, double MinHeight) {
-		double diffWidth = stage.getWidth() - scene.getWidth();
-		double diffHeight = stage.getHeight() - scene.getHeight();
+		double diffWidth = getDiffWidth(stage, scene);
+		double diffHeight = getDiffHeight(stage, scene);
 
 		stage.setMinWidth(minWidth + diffWidth);
 		stage.setMinHeight(MinHeight + diffHeight);
