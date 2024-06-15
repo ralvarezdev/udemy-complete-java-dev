@@ -3,12 +3,17 @@ package practices.pool;
 import java.sql.SQLException;
 
 public class CustThread extends Thread {
+	private final PoolManager POOL_MANAGER;
+
+	public CustThread(PoolManager poolManager) {
+		this.POOL_MANAGER = poolManager;
+	}
+
 	@Override
 	public void run() {
-		PoolManager pool = new PoolManager();
+		POOL_MANAGER.getConnection();
 
-		pool.getConnection();
-		var prodIds = pool.executeQuery("SELECT * FROM prod", (result) -> {
+		var prodIds = POOL_MANAGER.executeQuery("SELECT * FROM prod", (result) -> {
 			try {
 				return result.getString("id_producto");
 
@@ -17,7 +22,7 @@ public class CustThread extends Thread {
 			}
 			return null;
 		});
-		pool.putConnection();
+		POOL_MANAGER.putConnection();
 
 		System.out.println("Thread %-5s: %-10d".formatted(this.getName(), prodIds.size()));
 	}

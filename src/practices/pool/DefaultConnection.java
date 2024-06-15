@@ -9,36 +9,56 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-class Conn {
-	private Connection connection;
+import practices.ConnectionException;
 
-	private final static String INVALID_CONN = "Connection hasn't been initialized...";
-
-	private final static int VALID_DELAY = 5;
-
+class DefaultConnection implements practices.pool.Connection {
 	private final boolean AUTO_COMMIT;
-	private final DatabaseConfig config;
+	private final DatabaseConfig CONFIG;
+	private final String DRIVER;
 
-	public Conn(DatabaseConfig config, boolean autoCommit) {
-		connect(config, autoCommit);
+	private Connection connection = null;
+
+	public DefaultConnection(String driver, DatabaseConfig config, boolean autoCommit, int attempts)
+			throws ConnectionException {
+		this.DRIVER = driver;
 		this.AUTO_COMMIT = autoCommit;
-		this.config = config;
+		this.CONFIG = config;
+
+		// Try to connect n times
+		if (attempts <= 0)
+			attempts = 3;
+
+		for (int i = 0; i < attempts; i++)
+			if (connect(config, autoCommit))
+				return;
+
+		throw new ConnectionException("Couldn't establish database connection...");
 	}
 
-	private synchronized void connect(DatabaseConfig config, boolean autoCommit) {
-		// Open Connection to database
-		try {
-			connection = DriverManager.getConnection(config.url(), config.user(), config.password());
+	public DefaultConnection(String driver, DatabaseConfig config, boolean autoCommit) throws ConnectionException {
+		this(driver, config, autoCommit, 3);
+	}
 
-			if (!autoCommit)
-				connection.setAutoCommit(false);
+	public synchronized boolean connect(DatabaseConfig config, boolean autoCommit) {
+		try {
+			// Close existing connection, if exists
+			if (isNull())
+				disconnect();
+
+			// Open connection to database
+			this.connection = DriverManager.getConnection(config.url(DRIVER), config.user(), config.password());
+			this.connection.setAutoCommit(autoCommit);
 
 			System.out.println("Connection successfully established...");
 
 		} catch (SQLException e) {
-			connection = null;
+			setNull();
 			System.err.println(e);
+
+			return false;
 		}
+
+		return true;
 	}
 
 	public synchronized boolean commit() {
@@ -81,16 +101,15 @@ class Conn {
 
 		} catch (SQLException e) {
 			System.err.println(e);
-			return;
 		}
 	}
 
 	public synchronized boolean isNull() {
-		if (connection == null) {
-			System.err.println(INVALID_CONN);
-			return true;
-		}
-		return false;
+		return connection == null;
+	}
+
+	private synchronized void setNull() {
+		connection = null;
 	}
 
 	public synchronized boolean isClosed() {
@@ -102,8 +121,9 @@ class Conn {
 
 		} catch (SQLException e) {
 			System.err.println(e);
-			return true;
 		}
+
+		return true;
 	}
 
 	public synchronized boolean isValid() {
@@ -111,7 +131,7 @@ class Conn {
 			return false;
 
 		try {
-			return connection.isValid(VALID_DELAY);
+			return connection.isValid(5);
 
 		} catch (SQLException e) {
 			System.err.println(e);
@@ -122,39 +142,44 @@ class Conn {
 
 	private synchronized void checkConnection() {
 		if (!isValid()) {
-			this.disconnect();
-			this.connect(config, AUTO_COMMIT);
+			disconnect();
+			connect(CONFIG, AUTO_COMMIT);
 		}
 	}
 
 	private synchronized void closeStatement(Statement statement) {
 		try {
-			statement.close();
+			if (statement != null)
+				statement.close();
 
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
 	}
 
-	private synchronized void closeStatement(PreparedStatement statement) {
+	private synchronized void closeStatement(PreparedStatement prepStatement) {
 		try {
-			statement.close();
+			if (prepStatement != null)
+				prepStatement.close();
 
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
 	}
 
-	private synchronized void setPreparedStatement(PreparedStatement statement, String... params) throws SQLException {
+	private synchronized PreparedStatement setPreparedStatement(PreparedStatement prepStatement, String... params)
+			throws SQLException {
 		try {
 			int paramCounter = 1;
 
 			for (String param : params)
-				statement.setString(paramCounter++, param);
+				prepStatement.setString(paramCounter++, param);
 
 		} catch (SQLException e) {
 			throw e;
 		}
+
+		return prepStatement;
 	}
 
 	public synchronized Integer executeUpdate(String sql) {
@@ -172,27 +197,31 @@ class Conn {
 
 		}
 
-		closeStatement(statement);
+		finally {
+			closeStatement(statement);
+		}
+
 		return result;
 	}
 
 	public synchronized Integer executeUpdate(String sql, String... params) {
 		checkConnection();
 
-		PreparedStatement statement = null;
+		PreparedStatement prepStatement = null;
 		Integer result = null;
 
 		try {
-			statement = connection.prepareStatement(sql);
-			setPreparedStatement(statement, params);
-
-			result = statement.executeUpdate();
+			prepStatement = setPreparedStatement(connection.prepareStatement(sql), params);
+			result = prepStatement.executeUpdate();
 
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
 
-		closeStatement(statement);
+		finally {
+			closeStatement(prepStatement);
+		}
+
 		return result;
 	}
 
@@ -211,10 +240,13 @@ class Conn {
 				list.add(func.apply(result));
 
 			result.close();
-			closeStatement(statement);
 
 		} catch (SQLException e) {
 			System.err.println(e);
+		}
+
+		finally {
+			closeStatement(statement);
 		}
 
 		return list;
@@ -228,18 +260,20 @@ class Conn {
 		ResultSet result = null;
 
 		try {
-			statement = connection.prepareStatement(sql);
-			setPreparedStatement(statement, params);
+			statement = setPreparedStatement(connection.prepareStatement(sql), params);
 			result = statement.executeQuery();
 
 			while (result.next())
 				list.add(func.apply(result));
 
 			result.close();
-			closeStatement(statement);
 
 		} catch (SQLException e) {
 			System.err.println(e);
+		}
+
+		finally {
+			closeStatement(statement);
 		}
 
 		return list;

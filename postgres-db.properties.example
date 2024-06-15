@@ -1,6 +1,6 @@
 # Database connection details example. Should be placed inside 'bin' directory
 DBHOST=
-DBPORT=
+PORT=
 DBNAME=
-DBUSER=
+USER=
 DBPASS=

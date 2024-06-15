@@ -2,14 +2,18 @@ package practices.pool;
 
 import java.util.List;
 
-public interface PoolManager {
-	public void getConnection();
+interface Connection {
+	public boolean connect(DatabaseConfig config, boolean autoCommit);
 
-	public void putConnection();
+	public void disconnect();
 
-	public void commit();
+	public boolean commit();
 
-	public void rollback();
+	public boolean rollback();
+
+	public boolean isClosed();
+
+	public boolean isValid();
 
 	public Integer executeUpdate(String sql);
 
