@@ -11,45 +11,64 @@ import java.util.List;
 
 import practices.ConnectionException;
 
-class DefaultConnection implements practices.pool.Connection {
-	private final boolean AUTO_COMMIT;
-	private final DatabaseConfig CONFIG;
+public final class DefaultConnection implements practices.pool.Connection {
 	private final String DRIVER;
+	private final Databases DB;
+	private final String DB_NAME;
+	private final DatabaseConfig DB_CONFIG;
+	private final boolean AUTO_COMMIT;
+	private final boolean PRINT_MESSAGES;
 
 	private Connection connection = null;
 
-	public DefaultConnection(String driver, DatabaseConfig config, boolean autoCommit, int attempts)
-			throws ConnectionException {
-		this.DRIVER = driver;
-		this.AUTO_COMMIT = autoCommit;
-		this.CONFIG = config;
+	public DefaultConnection(String driver, Databases database, DatabaseConfig dbConfig, boolean autoCommit,
+			boolean printMessages, int attempts) throws NullPointerException, ConnectionException {
+		if (driver == null || database == null || dbConfig == null)
+			throw new NullPointerException("There are some null configurations...");
+
+		DRIVER = driver;
+		DB = database;
+		DB_NAME = database.getDatabaseName();
+		DB_CONFIG = dbConfig;
+		AUTO_COMMIT = autoCommit;
+		PRINT_MESSAGES = printMessages;
 
 		// Try to connect n times
 		if (attempts <= 0)
 			attempts = 3;
 
 		for (int i = 0; i < attempts; i++)
-			if (connect(config, autoCommit))
+			if (connect(dbConfig, autoCommit))
 				return;
 
-		throw new ConnectionException("Couldn't establish database connection...");
+		throw new ConnectionException("%s: Couldn't establish database connection.".formatted(DB_NAME));
 	}
 
-	public DefaultConnection(String driver, DatabaseConfig config, boolean autoCommit) throws ConnectionException {
-		this(driver, config, autoCommit, 3);
+	public DefaultConnection(String driver, Databases databases, DatabaseConfig dbConfig, boolean autoCommit,
+			boolean printMessages) throws NullPointerException, ConnectionException {
+		this(driver, databases, dbConfig, autoCommit, printMessages, 3);
 	}
 
-	public synchronized boolean connect(DatabaseConfig config, boolean autoCommit) {
+	public DefaultConnection(String driver, Databases databases, DatabaseConfig dbConfig)
+			throws NullPointerException, ConnectionException {
+		this(driver, databases, dbConfig, true, false);
+	}
+
+	public synchronized boolean connect(DatabaseConfig dbConfig, boolean autoCommit) {
+		if (dbConfig == null)
+			throw new NullPointerException("%s: Database configuration is null.".formatted(DB_NAME));
+
 		try {
 			// Close existing connection, if exists
 			if (isNull())
 				disconnect();
 
 			// Open connection to database
-			this.connection = DriverManager.getConnection(config.url(DRIVER), config.user(), config.password());
-			this.connection.setAutoCommit(autoCommit);
+			connection = DriverManager.getConnection(dbConfig.url(DRIVER), dbConfig.user(), dbConfig.password());
+			connection.setAutoCommit(autoCommit);
 
-			System.out.println("Connection successfully established...");
+			if (PRINT_MESSAGES)
+				System.out.println("%s: Connection successfully established...".formatted(DB_NAME));
 
 		} catch (SQLException e) {
 			setNull();
@@ -97,7 +116,9 @@ class DefaultConnection implements practices.pool.Connection {
 				return;
 
 			connection.close();
-			System.out.println("Connection successfully closed...");
+
+			if (PRINT_MESSAGES)
+				System.out.println("%s: Connection successfully closed...".formatted(DB_NAME));
 
 		} catch (SQLException e) {
 			System.err.println(e);
@@ -143,7 +164,7 @@ class DefaultConnection implements practices.pool.Connection {
 	private synchronized void checkConnection() {
 		if (!isValid()) {
 			disconnect();
-			connect(CONFIG, AUTO_COMMIT);
+			connect(DB_CONFIG, AUTO_COMMIT);
 		}
 	}
 

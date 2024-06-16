@@ -3,6 +3,8 @@ package practices.pool;
 import java.util.List;
 
 public interface PoolManager {
+	public boolean isValid();
+
 	public void getConnection();
 
 	public void putConnection();

@@ -8,46 +8,78 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import practices.MissingPropertiesFileException;
 import practices.MissingPropertyException;
 
-public class DefaultPropertiesReader implements PropertiesReader {
+public final class DefaultPropertiesReader implements PropertiesReader {
 	private final ClassLoader CONTEXT;
 
 	public DefaultPropertiesReader() {
-		this.CONTEXT = Thread.currentThread().getContextClassLoader();
+		CONTEXT = Thread.currentThread().getContextClassLoader();
 	}
 
-	public String getResourcePath(String resourceFileName) throws MissingPropertiesFileException {
-		URL resource = CONTEXT.getResource(resourceFileName);
+	public String getResourcePath(String resourceFilename) throws NullPointerException, MissingPropertyException {
+		if (resourceFilename == null)
+			throw new NullPointerException("Resource filename is null.");
+
+		URL resource = CONTEXT.getResource(resourceFilename);
 
 		if (resource == null)
-			throw new MissingPropertiesFileException("Missing %s file.".formatted(resourceFileName));
+			throw new MissingPropertyException("Missing %s file.".formatted(resourceFilename));
 
 		return resource.getPath();
 	}
 
-	public Map<String, String> getProperties(String resourceFileName, List<String> propsFieldsName)
-			throws IOException, MissingPropertyException, MissingPropertiesFileException {
-		HashMap<String, String> propsValues = new HashMap<>();
+	public String getProperty(String resourceFilename, String fieldName)
+			throws NullPointerException, MissingPropertyException {
+		if (fieldName == null)
+			new NullPointerException("Properties field name list is null.");
+
+		String resourcePath = getResourcePath(resourceFilename);
 
 		try {
 			Properties props = new Properties();
-			String resourcePath = getResourcePath(resourceFileName);
 			props.load(new FileInputStream(resourcePath));
 
-			for (String propFieldName : propsFieldsName) {
-				String propValue = props.getProperty(propFieldName);
-				if (propsValues == null)
-					throw new MissingPropertyException("Missing some properties.");
+			String fieldValue = props.getProperty(fieldName);
 
-				propsValues.put(propFieldName, propValue);
+			if (fieldValue == null)
+				throw new MissingPropertyException("Missing '%s' property.".formatted(fieldName));
+
+			return fieldValue;
+
+		} catch (IOException e) {
+			throw new MissingPropertyException("Properties file couldn't be loaded.");
+		}
+	}
+
+	public Map<String, String> getProperties(String resourceFilename, List<String> propsFieldsName)
+			throws NullPointerException, MissingPropertyException {
+		if (propsFieldsName == null)
+			new NullPointerException("Properties fields name list is null.");
+
+		HashMap<String, String> propsFieldsValues = new HashMap<>();
+		String resourcePath = getResourcePath(resourceFilename);
+
+		try {
+			Properties props = new Properties();
+			props.load(new FileInputStream(resourcePath));
+
+			for (String fieldName : propsFieldsName) {
+				if (fieldName == null)
+					continue;
+
+				String fieldValue = props.getProperty(fieldName);
+
+				if (fieldValue == null)
+					throw new MissingPropertyException("Missing '%s' property.".formatted(fieldName));
+
+				propsFieldsValues.put(fieldName, fieldValue);
 			}
 
-		} catch (IOException | MissingPropertyException | MissingPropertiesFileException e) {
-			throw e;
+		} catch (IOException e) {
+			throw new MissingPropertyException("Properties file couldn't be loaded.");
 		}
 
-		return propsValues;
+		return propsFieldsValues;
 	}
 }

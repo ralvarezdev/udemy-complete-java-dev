@@ -2,9 +2,13 @@ package practices.pool;
 
 import java.util.LinkedList;
 
+import practices.MissingPropertyException;
+
 public class Main {
 	public static void main(String[] args) {
 		int MAX_THREADS = 1000;
+		String DB_PROPS_FILENAME = "pools-db.properties";
+		String POOL_PROPS_FILENAME = "pools-pool.properties";
 
 		LinkedList<CustThread> threads = new LinkedList<>();
 
@@ -13,11 +17,12 @@ public class Main {
 		// Read properties
 		try {
 			DefaultPropertiesReader propsReader = new DefaultPropertiesReader();
-			DatabaseConfig dbConfig = Databases.POSTGRES.getDatabaseConfig(propsReader);
-			PoolConfig poolConfig = Databases.POSTGRES.getDatabasePoolConfig(propsReader);
-			pool = DefaultPostgresPool.getInstance(dbConfig, poolConfig, true);
+			Databases db = Databases.POSTGRES;
+			DatabaseConfig dbConfig = db.getDatabaseConfig(propsReader, DB_PROPS_FILENAME);
+			PoolConfig poolConfig = db.getDatabasePoolConfig(propsReader, POOL_PROPS_FILENAME);
+			pool = DefaultPostgresPool.getInstance(dbConfig, poolConfig, true, true);
 
-		} catch (Exception e) {
+		} catch (NullPointerException | MissingPropertyException e) {
 			System.err.println(e);
 			System.exit(-1);
 		}

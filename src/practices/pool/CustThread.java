@@ -6,7 +6,7 @@ public class CustThread extends Thread {
 	private final PoolManager POOL_MANAGER;
 
 	public CustThread(PoolManager poolManager) {
-		this.POOL_MANAGER = poolManager;
+		POOL_MANAGER = poolManager;
 	}
 
 	@Override

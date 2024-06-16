@@ -1,70 +1,80 @@
 package practices.pool;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
 
-import practices.MissingPropertiesFileException;
 import practices.MissingPropertyException;
 
 public enum Databases {
-	POSTGRES("postgres");
+	POSTGRES("POSTGRES"), MYSQL("MYSQL");
 
 	private final String DATABASE_NAME;
-	private final String DATABASE_PROPERTIES_NAME;
-	private final String DATABASE_POOL_PROPERTIES_NAME;
 
 	private Databases(String databaseName) {
-		this.DATABASE_NAME = databaseName;
-
-		this.DATABASE_PROPERTIES_NAME = "%s-db.properties".formatted(this.DATABASE_NAME);
-		this.DATABASE_POOL_PROPERTIES_NAME = "%s-pool.properties".formatted(this.DATABASE_NAME);
+		DATABASE_NAME = databaseName;
 	}
 
-	public Map<String, String> getDatabaseProperties(PropertiesReader propsReader)
-			throws IOException, MissingPropertyException, MissingPropertiesFileException {
-		DatabaseProperties[] dbPropsValues = DatabaseProperties.values();
+	public String getDatabaseName() {
+		return DATABASE_NAME;
+	}
+
+	private void checkProps(PropertiesReader propsReader, String propsFilename)
+			throws NullPointerException, MissingPropertyException {
+		if (propsReader == null)
+			throw new NullPointerException("Database properties reader is null.");
+
+		if (propsFilename == null)
+			throw new NullPointerException("Database properties filename is null.");
+	}
+
+	public Map<String, String> getDatabaseProperties(PropertiesReader propsReader, String propsFilename)
+			throws NullPointerException, MissingPropertyException {
+		checkProps(propsReader, propsFilename);
+
+		DatabaseProperties[] dbPropsFields = DatabaseProperties.values();
 		LinkedList<String> dbPropsFieldsName = new LinkedList<>();
 
-		for (DatabaseProperties dbPropsValue : dbPropsValues)
-			dbPropsFieldsName.add(dbPropsValue.getFieldName());
+		for (DatabaseProperties dbPropsField : dbPropsFields)
+			dbPropsFieldsName.add(dbPropsField.getFieldName(this));
 
-		return propsReader.getProperties(DATABASE_PROPERTIES_NAME, dbPropsFieldsName);
+		return propsReader.getProperties(propsFilename, dbPropsFieldsName);
 	}
 
-	public DatabaseConfig getDatabaseConfig(PropertiesReader propsReader)
-			throws IOException, MissingPropertyException, MissingPropertiesFileException {
-		Map<String, String> dbProps = getDatabaseProperties(propsReader);
+	public DatabaseConfig getDatabaseConfig(PropertiesReader propsReader, String propsFilename)
+			throws NullPointerException, MissingPropertyException {
+		Map<String, String> dbProps = getDatabaseProperties(propsReader, propsFilename);
 
 		// Get properties values
-		String DBHOST = dbProps.get(DatabaseProperties.DBHOST.getFieldName());
-		String DBPORT = dbProps.get(DatabaseProperties.DBPORT.getFieldName());
-		String DBNAME = dbProps.get(DatabaseProperties.DBNAME.getFieldName());
-		String DBUSER = dbProps.get(DatabaseProperties.DBUSER.getFieldName());
-		String DBPASS = dbProps.get(DatabaseProperties.DBPASS.getFieldName());
+		String DBHOST = dbProps.get(DatabaseProperties.DBHOST.getFieldName(this));
+		String DBPORT = dbProps.get(DatabaseProperties.DBPORT.getFieldName(this));
+		String DBNAME = dbProps.get(DatabaseProperties.DBNAME.getFieldName(this));
+		String DBUSER = dbProps.get(DatabaseProperties.DBUSER.getFieldName(this));
+		String DBPASS = dbProps.get(DatabaseProperties.DBPASS.getFieldName(this));
 
 		return new DatabaseConfig(DBHOST, DBPORT, DBNAME, DBUSER, DBPASS);
 	}
 
-	public Map<String, String> getDatabasePoolProperties(PropertiesReader propsReader)
-			throws IOException, MissingPropertyException, MissingPropertiesFileException {
-		DatabasePoolProperties[] poolPropsValues = DatabasePoolProperties.values();
+	public Map<String, String> getDatabasePoolProperties(PropertiesReader propsReader, String propsFilename)
+			throws NullPointerException, MissingPropertyException {
+		checkProps(propsReader, propsFilename);
+
+		DatabasePoolProperties[] poolPropsFields = DatabasePoolProperties.values();
 		LinkedList<String> poolPropsFieldsName = new LinkedList<>();
 
-		for (DatabasePoolProperties poolPropsValue : poolPropsValues)
-			poolPropsFieldsName.add(poolPropsValue.getFieldName());
+		for (DatabasePoolProperties poolPropsField : poolPropsFields)
+			poolPropsFieldsName.add(poolPropsField.getFieldName(this));
 
-		return propsReader.getProperties(DATABASE_POOL_PROPERTIES_NAME, poolPropsFieldsName);
+		return propsReader.getProperties(propsFilename, poolPropsFieldsName);
 	}
 
-	public PoolConfig getDatabasePoolConfig(PropertiesReader propsReader)
-			throws IOException, MissingPropertyException, MissingPropertiesFileException {
-		Map<String, String> poolProps = getDatabasePoolProperties(propsReader);
+	public PoolConfig getDatabasePoolConfig(PropertiesReader propsReader, String propsFilename)
+			throws NullPointerException, MissingPropertyException {
+		Map<String, String> poolProps = getDatabasePoolProperties(propsReader, propsFilename);
 
 		// Get properties values
-		int INIT_CONNS = Integer.parseInt(poolProps.get(DatabasePoolProperties.INIT_CONNS.getFieldName()));
-		int INCR_CONNS = Integer.parseInt(poolProps.get(DatabasePoolProperties.INCR_CONNS.getFieldName()));
-		int MAX_CONNS = Integer.parseInt(poolProps.get(DatabasePoolProperties.MAX_CONNS.getFieldName()));
+		int INIT_CONNS = Integer.parseInt(poolProps.get(DatabasePoolProperties.INIT_CONNS.getFieldName(this)));
+		int INCR_CONNS = Integer.parseInt(poolProps.get(DatabasePoolProperties.INCR_CONNS.getFieldName(this)));
+		int MAX_CONNS = Integer.parseInt(poolProps.get(DatabasePoolProperties.MAX_CONNS.getFieldName(this)));
 
 		return new PoolConfig(INIT_CONNS, INCR_CONNS, MAX_CONNS);
 	}

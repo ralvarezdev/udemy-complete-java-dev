@@ -2,28 +2,37 @@ package practices.pool;
 
 import java.util.List;
 
-public class DefaultPoolManager implements PoolManager {
+public final class DefaultPoolManager implements PoolManager {
 	private final Pool POOL;
 
 	private Connection connection;
 
-	public DefaultPoolManager(Pool pool) {
-		this.POOL = pool;
+	public DefaultPoolManager(Pool pool) throws NullPointerException {
+		if (pool == null)
+			throw new NullPointerException("Pool is null.");
+
+		POOL = pool;
 	}
 
 	private synchronized boolean isNull() {
-		return this.connection == null;
+		return connection == null;
+	}
+
+	public synchronized boolean isValid() {
+		if (connection != null)
+			return connection.isValid();
+		return false;
 	}
 
 	public synchronized void getConnection() {
 		if (isNull())
-			this.connection = POOL.getConnection();
+			connection = POOL.getConnection();
 	}
 
 	public synchronized void putConnection() {
 		if (!isNull()) {
 			POOL.putConnection(connection);
-			this.connection = null;
+			connection = null;
 		}
 	}
 
