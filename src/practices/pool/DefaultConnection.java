@@ -1,11 +1,11 @@
 package practices.pool;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +20,7 @@ public final class DefaultConnection implements practices.pool.Connection {
 	private final boolean PRINT_MESSAGES;
 
 	private Connection connection = null;
+	private PreparedStatement prepStatement = null;
 
 	public DefaultConnection(String driver, Databases database, DatabaseConfig dbConfig, boolean autoCommit,
 			boolean printMessages, int attempts) throws NullPointerException, ConnectionException {
@@ -28,7 +29,7 @@ public final class DefaultConnection implements practices.pool.Connection {
 
 		DRIVER = driver;
 		DB = database;
-		DB_NAME = database.getDatabaseName();
+		DB_NAME = DB.getDatabaseName();
 		DB_CONFIG = dbConfig;
 		AUTO_COMMIT = autoCommit;
 		PRINT_MESSAGES = printMessages;
@@ -40,6 +41,9 @@ public final class DefaultConnection implements practices.pool.Connection {
 		for (int i = 0; i < attempts; i++)
 			if (connect(dbConfig, autoCommit))
 				return;
+
+			else if (PRINT_MESSAGES)
+				System.out.println("%s: Attempt to establish database connection failed...".formatted(DB_NAME));
 
 		throw new ConnectionException("%s: Couldn't establish database connection.".formatted(DB_NAME));
 	}
@@ -168,135 +172,116 @@ public final class DefaultConnection implements practices.pool.Connection {
 		}
 	}
 
-	private synchronized void closeStatement(Statement statement) {
+	private synchronized void checkPrepStatement() throws NullPointerException {
+		if (prepStatement == null)
+			throw new NullPointerException("%s: Prepared statement hasn't been initialized.".formatted(DB_NAME));
+	}
+
+	public synchronized void createPreparedStatement(String sql) {
+		checkConnection();
+
+		if (prepStatement != null)
+			closePreparedStatement();
+
 		try {
-			if (statement != null)
-				statement.close();
+			prepStatement = connection.prepareStatement(sql);
 
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
 	}
 
-	private synchronized void closeStatement(PreparedStatement prepStatement) {
+	public synchronized void closePreparedStatement() {
 		try {
 			if (prepStatement != null)
 				prepStatement.close();
 
-		} catch (SQLException e) {
-			System.err.println(e);
-		}
-	}
-
-	private synchronized PreparedStatement setPreparedStatement(PreparedStatement prepStatement, String... params)
-			throws SQLException {
-		try {
-			int paramCounter = 1;
-
-			for (String param : params)
-				prepStatement.setString(paramCounter++, param);
-
-		} catch (SQLException e) {
-			throw e;
-		}
-
-		return prepStatement;
-	}
-
-	public synchronized Integer executeUpdate(String sql) {
-		checkConnection();
-
-		Statement statement = null;
-		Integer result = null;
-
-		try {
-			statement = connection.createStatement();
-			result = statement.executeUpdate(sql);
-
-		} catch (SQLException e) {
-			System.err.println(e);
-
-		}
-
-		finally {
-			closeStatement(statement);
-		}
-
-		return result;
-	}
-
-	public synchronized Integer executeUpdate(String sql, String... params) {
-		checkConnection();
-
-		PreparedStatement prepStatement = null;
-		Integer result = null;
-
-		try {
-			prepStatement = setPreparedStatement(connection.prepareStatement(sql), params);
-			result = prepStatement.executeUpdate();
+			prepStatement = null;
 
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
-
-		finally {
-			closeStatement(prepStatement);
-		}
-
-		return result;
 	}
 
-	public <T> List<T> executeQuery(String sql, ResultSetFunction<T> func) {
+	private void checkParamCounter(int paramCounter) throws SQLException {
+		if (paramCounter < 1)
+			throw new SQLException("%s: Invalid parameter index.".formatted(DB_NAME));
+	}
+
+	public synchronized void setStringParameter(int paramCounter, String param)
+			throws NullPointerException, SQLException {
+		checkPrepStatement();
+		checkParamCounter(paramCounter);
+		prepStatement.setString(paramCounter, param);
+	}
+
+	public synchronized void setIntParameter(int paramCounter, int param) throws NullPointerException, SQLException {
+		checkPrepStatement();
+		checkParamCounter(paramCounter);
+		prepStatement.setInt(paramCounter, param);
+	}
+
+	public synchronized void setFloatParameter(int paramCounter, float param)
+			throws NullPointerException, SQLException {
+		checkPrepStatement();
+		checkParamCounter(paramCounter);
+		prepStatement.setFloat(paramCounter, param);
+	}
+
+	public synchronized void setDoubleParameter(int paramCounter, double param)
+			throws NullPointerException, SQLException {
+		checkPrepStatement();
+		checkParamCounter(paramCounter);
+		prepStatement.setDouble(paramCounter, param);
+	}
+
+	public synchronized void setBigDecimalParameter(int paramCounter, BigDecimal param)
+			throws NullPointerException, SQLException {
+		checkPrepStatement();
+		checkParamCounter(paramCounter);
+		prepStatement.setBigDecimal(paramCounter, param);
+	}
+
+	public synchronized void setLongParameter(int paramCounter, long param) throws NullPointerException, SQLException {
+		checkPrepStatement();
+		checkParamCounter(paramCounter);
+		prepStatement.setLong(paramCounter, param);
+	}
+
+	public synchronized Integer executeUpdate() throws NullPointerException {
 		checkConnection();
+		checkPrepStatement();
+
+		try {
+			return prepStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			System.err.println(e);
+		}
+
+		return null;
+	}
+
+	public synchronized <T> List<T> executeQuery(ResultSetFunction<T> func) throws NullPointerException {
+		checkConnection();
+		checkPrepStatement();
 
 		LinkedList<T> list = new LinkedList<>();
-		Statement statement = null;
 		ResultSet result = null;
 
 		try {
-			statement = connection.createStatement();
-			result = statement.executeQuery(sql);
+			result = prepStatement.executeQuery();
 
 			while (result.next())
 				list.add(func.apply(result));
 
 			result.close();
+			return list;
 
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
 
-		finally {
-			closeStatement(statement);
-		}
-
-		return list;
-	}
-
-	public <T> List<T> executeQuery(String sql, ResultSetFunction<T> func, String... params) {
-		checkConnection();
-
-		LinkedList<T> list = new LinkedList<>();
-		PreparedStatement statement = null;
-		ResultSet result = null;
-
-		try {
-			statement = setPreparedStatement(connection.prepareStatement(sql), params);
-			result = statement.executeQuery();
-
-			while (result.next())
-				list.add(func.apply(result));
-
-			result.close();
-
-		} catch (SQLException e) {
-			System.err.println(e);
-		}
-
-		finally {
-			closeStatement(statement);
-		}
-
-		return list;
+		return null;
 	}
 }

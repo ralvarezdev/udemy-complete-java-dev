@@ -1,5 +1,7 @@
 package practices.dbcomponent;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +86,16 @@ public class DefaultDbComponent implements DbComponent {
 			throw new NullPointerException("Database sentences haven't been loaded.");
 	}
 
+	private synchronized PoolManager getPoolManager(Databases database) throws NullPointerException {
+		checkPoolManager(database);
+		return POOL_MANAGERS.get(database);
+	}
+
+	private synchronized Pool getPool(Databases database) throws NullPointerException {
+		checkPool(database);
+		return POOLS.get(database);
+	}
+
 	public synchronized void loadPoolManager(Databases database, boolean autoCommit)
 			throws NullPointerException, MissingPropertyException {
 		checkDatabase(database);
@@ -106,15 +118,11 @@ public class DefaultDbComponent implements DbComponent {
 	}
 
 	public void getConnection(Databases database) throws NullPointerException {
-		checkDatabase(database);
-		POOL_MANAGERS.get(database).getConnection();
+		getPoolManager(database).getConnection();
 	}
 
 	public void putConnection(Databases database) throws NullPointerException {
-		checkDatabase(database);
-
-		if (POOLS.containsKey(database))
-			POOL_MANAGERS.get(database).putConnection();
+		getPoolManager(database).putConnection();
 	}
 
 	public synchronized void loadSentences(Databases database, String resourceFilename, List<String> sentenceFieldsName)
@@ -134,40 +142,55 @@ public class DefaultDbComponent implements DbComponent {
 		throw new NullPointerException("Database sentence not found.");
 	}
 
-	public Integer executeUpdate(Databases database, String sentenceFieldName) throws NullPointerException {
-		String sentenceFieldValue = getSentence(database, sentenceFieldName);
-
-		checkPoolManager(database);
-		return POOL_MANAGERS.get(database).executeUpdate(sentenceFieldValue);
-
-	}
-
-	public Integer executeUpdate(Databases database, String sentenceFieldName, String... params)
+	public synchronized void createPreparedStatement(Databases database, String sentenceFieldName)
 			throws NullPointerException {
-		String sentenceFieldValue = getSentence(database, sentenceFieldName);
-
-		checkPoolManager(database);
-		return POOL_MANAGERS.get(database).executeUpdate(sentenceFieldValue, params);
+		String sql = getSentence(database, sentenceFieldName);
+		getPoolManager(database).createPreparedStatement(sql);
 	}
 
-	public <T> List<T> executeQuery(Databases database, String sentenceFieldName, ResultSetFunction<T> func)
-			throws NullPointerException {
-		String sentenceFieldValue = getSentence(database, sentenceFieldName);
-
-		checkPoolManager(database);
-		return POOL_MANAGERS.get(database).executeQuery(sentenceFieldValue, func);
+	public synchronized void closePreparedStatement(Databases database) throws NullPointerException {
+		getPoolManager(database).closePreparedStatement();
 	}
 
-	public <T> List<T> executeQuery(Databases database, String sentenceFieldName, ResultSetFunction<T> func,
-			String... params) throws NullPointerException {
-		String sentenceFieldValue = getSentence(database, sentenceFieldName);
+	public synchronized void setStringParameter(Databases database, int paramCounter, String param)
+			throws NullPointerException, SQLException {
+		getPoolManager(database).setStringParameter(paramCounter, param);
+	}
 
-		checkPoolManager(database);
-		return POOL_MANAGERS.get(database).executeQuery(sentenceFieldValue, func, params);
+	public synchronized void setIntParameter(Databases database, int paramCounter, int param)
+			throws NullPointerException, SQLException {
+		getPoolManager(database).setIntParameter(paramCounter, param);
+	}
+
+	public synchronized void setFloatParameter(Databases database, int paramCounter, float param)
+			throws NullPointerException, SQLException {
+		getPoolManager(database).setFloatParameter(paramCounter, param);
+	}
+
+	public synchronized void setDoubleParameter(Databases database, int paramCounter, double param)
+			throws NullPointerException, SQLException {
+		getPoolManager(database).setDoubleParameter(paramCounter, param);
+	}
+
+	public synchronized void setBigDecimalParameter(Databases database, int paramCounter, BigDecimal param)
+			throws NullPointerException, SQLException {
+		getPoolManager(database).setBigDecimalParameter(paramCounter, param);
+	}
+
+	public synchronized void setLongParameter(Databases database, int paramCounter, long param)
+			throws NullPointerException, SQLException {
+		getPoolManager(database).setLongParameter(paramCounter, param);
+	}
+
+	public Integer executeUpdate(Databases database) throws NullPointerException {
+		return getPoolManager(database).executeUpdate();
+	}
+
+	public <T> List<T> executeQuery(Databases database, ResultSetFunction<T> func) throws NullPointerException {
+		return getPoolManager(database).executeQuery(func);
 	}
 
 	public void disconnectAll(Databases database) {
-		checkPool(database);
-		POOLS.get(database).disconnectAll();
+		getPool(database).disconnectAll();
 	}
 }

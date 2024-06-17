@@ -1,5 +1,7 @@
 package practices.dbcomponent;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,16 +31,31 @@ public interface DbComponent {
 
 	public String getSentence(Databases database, String sentenceFieldName) throws NullPointerException;
 
-	public Integer executeUpdate(Databases database, String sentenceFieldName) throws NullPointerException;
+	public void createPreparedStatement(Databases database, String sentenceFieldName) throws NullPointerException;
 
-	public Integer executeUpdate(Databases database, String sentenceFieldName, String... params)
-			throws NullPointerException;
+	public void closePreparedStatement(Databases database) throws NullPointerException;
 
-	public <T> List<T> executeQuery(Databases database, String sentenceFieldName, ResultSetFunction<T> func)
-			throws NullPointerException;
+	public void setStringParameter(Databases database, int paramCounter, String param)
+			throws NullPointerException, SQLException;
 
-	public <T> List<T> executeQuery(Databases database, String sentenceFieldName, ResultSetFunction<T> func,
-			String... params) throws NullPointerException;
+	public void setIntParameter(Databases database, int paramCounter, int param)
+			throws NullPointerException, SQLException;
+
+	public void setFloatParameter(Databases database, int paramCounter, float param)
+			throws NullPointerException, SQLException;
+
+	public void setDoubleParameter(Databases database, int paramCounter, double param)
+			throws NullPointerException, SQLException;
+
+	public void setBigDecimalParameter(Databases database, int paramCounter, BigDecimal param)
+			throws NullPointerException, SQLException;
+
+	public void setLongParameter(Databases database, int paramCounter, long param)
+			throws NullPointerException, SQLException;
+
+	public Integer executeUpdate(Databases database) throws NullPointerException;
+
+	public <T> List<T> executeQuery(Databases database, ResultSetFunction<T> func) throws NullPointerException;
 
 	public void disconnectAll(Databases database);
 }

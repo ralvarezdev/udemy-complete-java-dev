@@ -12,8 +12,9 @@ public class CustThread extends Thread {
 	@Override
 	public void run() {
 		POOL_MANAGER.getConnection();
+		POOL_MANAGER.createPreparedStatement("SELECT * FROM prod");
 
-		var prodIds = POOL_MANAGER.executeQuery("SELECT * FROM prod", (result) -> {
+		var prodIds = POOL_MANAGER.executeQuery((result) -> {
 			try {
 				return result.getString("id_producto");
 
@@ -22,6 +23,8 @@ public class CustThread extends Thread {
 			}
 			return null;
 		});
+
+		POOL_MANAGER.closePreparedStatement();
 		POOL_MANAGER.putConnection();
 
 		System.out.println("Thread %-5s: %-10d".formatted(this.getName(), prodIds.size()));

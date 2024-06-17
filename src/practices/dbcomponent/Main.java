@@ -16,12 +16,13 @@ public class Main {
 		String POOL_PROPS_FILENAME = "pools-pool.properties";
 		boolean PRINT_MESSAGES = false;
 
-		Databases DB = Databases.MYSQL;
+		Databases DB = Databases.POSTGRES;
 		String DB_NAME = DB.getDatabaseName();
-		String DATABASE_SENTENCES_FILENAME = "dbcomponent-postgres-sentences.properties";
+		String DATABASE_SENTENCES_FILENAME = "dbcomponent-mysql-sentences.properties";
 
 		String SELECT_ALL = "SELECT_ALL";
 		String SELECT_ALL_BYID = "SELECT_ALL_BYID";
+		String INSERT = "INSERT";
 
 		DefaultPropertiesReader propsReader = new DefaultPropertiesReader();
 
@@ -35,8 +36,8 @@ public class Main {
 			dbComponent.loadPoolManager(DB);
 			dbComponent.getConnection(DB);
 
-			// Sentences to load
-			dbSentences = new LinkedList<>(Arrays.asList(SELECT_ALL, SELECT_ALL_BYID));
+			// Load sentences
+			dbSentences = new LinkedList<>(Arrays.asList(SELECT_ALL, SELECT_ALL_BYID, INSERT));
 
 			dbComponent.loadSentences(DB, DATABASE_SENTENCES_FILENAME, dbSentences);
 
@@ -58,26 +59,44 @@ public class Main {
 			return null;
 		};
 
-		// Select all sentence
-		results = dbComponent.executeQuery(DB, SELECT_ALL, func);
+		try {
+			// Select all sentence
+			dbComponent.createPreparedStatement(DB, SELECT_ALL);
+			results = dbComponent.executeQuery(DB, func);
+			dbComponent.closePreparedStatement(DB);
 
-		System.out.println("- Select all sentence from %s".formatted(DB_NAME));
+			System.out.println("- Select all sentence from %s".formatted(DB_NAME));
+			int lastID = results.size();
 
-		if (results.size() > 0) {
-			System.out.println(Arrays.deepToString(results.getFirst()));
-			System.out.println("...");
-			System.out.println(Arrays.deepToString(results.getLast()));
-		}
+			if (lastID > 0) {
+				System.out.println(Arrays.deepToString(results.getFirst()));
+				System.out.println("...");
+				System.out.println(Arrays.deepToString(results.getLast()));
+			}
+			System.out.println();
 
-		// Select all by ID sentence
-		results = dbComponent.executeQuery(DB, SELECT_ALL_BYID, func, "1");
+			/*
+			 * // Insert sentence dbComponent.createPreparedStatement(DB, INSERT);
+			 * dbComponent.setStringParameter(DB, 1, "Inserted from DB Component");
+			 * dbComponent.executeUpdate(DB); dbComponent.closePreparedStatement(DB);
+			 * 
+			 * System.out.println("- Inserting to %s".formatted(DB_NAME));
+			 * System.out.println(); lastID++;
+			 */
 
-		System.out.println("- Select all by ID sentence from %s".formatted(DB_NAME));
+			// Select all by ID sentence
+			dbComponent.createPreparedStatement(DB, SELECT_ALL_BYID);
+			dbComponent.setIntParameter(DB, 1, lastID);
+			results = dbComponent.executeQuery(DB, func);
+			dbComponent.closePreparedStatement(DB);
 
-		if (results.size() > 0) {
-			System.out.println(Arrays.deepToString(results.getFirst()));
-			System.out.println("...");
-			System.out.println(Arrays.deepToString(results.getLast()));
+			System.out.println("- Select all by ID sentence from %s".formatted(DB_NAME));
+
+			if (results.size() > 0)
+				System.out.println(Arrays.deepToString(results.getFirst()));
+
+		} catch (SQLException e) {
+			System.err.println(e);
 		}
 
 		// Put connection

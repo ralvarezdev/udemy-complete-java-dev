@@ -1,5 +1,7 @@
 package practices.pool;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.List;
 
 public interface PoolManager {
@@ -13,11 +15,23 @@ public interface PoolManager {
 
 	public void rollback();
 
-	public Integer executeUpdate(String sql);
+	public void createPreparedStatement(String sql);
 
-	public Integer executeUpdate(String sql, String... params);
+	public void closePreparedStatement();
 
-	public <T> List<T> executeQuery(String sql, ResultSetFunction<T> func);
+	public void setStringParameter(int paramCounter, String param) throws NullPointerException, SQLException;
 
-	public <T> List<T> executeQuery(String sql, ResultSetFunction<T> func, String... params);
+	public void setIntParameter(int paramCounter, int param) throws NullPointerException, SQLException;
+
+	public void setFloatParameter(int paramCounter, float param) throws NullPointerException, SQLException;
+
+	public void setDoubleParameter(int paramCounter, double param) throws NullPointerException, SQLException;
+
+	public void setBigDecimalParameter(int paramCounter, BigDecimal param) throws NullPointerException, SQLException;
+
+	public void setLongParameter(int paramCounter, long param) throws NullPointerException, SQLException;
+
+	public Integer executeUpdate();
+
+	public <T> List<T> executeQuery(ResultSetFunction<T> func);
 }

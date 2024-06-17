@@ -1,5 +1,7 @@
 package practices.pool;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.List;
 
 public final class DefaultPoolManager implements PoolManager {
@@ -37,36 +39,68 @@ public final class DefaultPoolManager implements PoolManager {
 	}
 
 	public synchronized void commit() {
-		if (!isNull())
+		if (isValid())
 			connection.commit();
 	}
 
 	public synchronized void rollback() {
-		if (!isNull())
+		if (isValid())
 			connection.rollback();
 	}
 
-	public synchronized Integer executeUpdate(String sql) {
-		if (!isNull())
-			return connection.executeUpdate(sql);
+	public synchronized void createPreparedStatement(String sql) {
+		if (isValid())
+			connection.createPreparedStatement(sql);
+	}
+
+	public synchronized void closePreparedStatement() {
+		if (isValid())
+			connection.closePreparedStatement();
+	}
+
+	public synchronized void setStringParameter(int paramCounter, String param)
+			throws NullPointerException, SQLException {
+		if (isValid())
+			connection.setStringParameter(paramCounter, param);
+	}
+
+	public synchronized void setIntParameter(int paramCounter, int param) throws NullPointerException, SQLException {
+		if (isValid())
+			connection.setIntParameter(paramCounter, param);
+	}
+
+	public synchronized void setFloatParameter(int paramCounter, float param)
+			throws NullPointerException, SQLException {
+		if (isValid())
+			connection.setFloatParameter(paramCounter, param);
+	}
+
+	public synchronized void setDoubleParameter(int paramCounter, double param)
+			throws NullPointerException, SQLException {
+		if (isValid())
+			connection.setDoubleParameter(paramCounter, param);
+	}
+
+	public synchronized void setBigDecimalParameter(int paramCounter, BigDecimal param)
+			throws NullPointerException, SQLException {
+		if (isValid())
+			connection.setBigDecimalParameter(paramCounter, param);
+	}
+
+	public synchronized void setLongParameter(int paramCounter, long param) throws NullPointerException, SQLException {
+		if (isValid())
+			connection.setLongParameter(paramCounter, param);
+	}
+
+	public synchronized Integer executeUpdate() {
+		if (isValid())
+			return connection.executeUpdate();
 		return null;
 	}
 
-	public synchronized Integer executeUpdate(String sql, String... params) {
-		if (!isNull())
-			return connection.executeUpdate(sql, params);
-		return null;
-	}
-
-	public synchronized <T> List<T> executeQuery(String sql, ResultSetFunction<T> func) {
-		if (!isNull())
-			return connection.executeQuery(sql, func);
-		return null;
-	}
-
-	public synchronized <T> List<T> executeQuery(String sql, ResultSetFunction<T> func, String... params) {
-		if (!isNull())
-			return connection.executeQuery(sql, func, params);
+	public synchronized <T> List<T> executeQuery(ResultSetFunction<T> func) {
+		if (isValid())
+			return connection.executeQuery(func);
 		return null;
 	}
 }

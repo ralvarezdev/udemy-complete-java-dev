@@ -63,6 +63,7 @@ class Database {
 			try {
 				connection = DriverManager.getConnection("jdbc:postgresql://" + DBHOST + ":" + DBPORT + "/" + DBNAME,
 						DBUSER, DBPASS);
+
 			} catch (SQLException e) {
 				System.err.println(e);
 			}

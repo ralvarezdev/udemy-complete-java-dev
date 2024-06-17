@@ -25,7 +25,7 @@ public class DefaultPool implements Pool {
 		// Set static attributes
 		DRIVER = driver;
 		DB = database;
-		DB_NAME = database.getDatabaseName();
+		DB_NAME = DB.getDatabaseName();
 		DB_CONFIG = dbConfig;
 		POOL_CONFIG = poolConfig;
 		AUTO_COMMIT = autoCommit;
