@@ -14,7 +14,7 @@ import practices.ConnectionException;
 public final class DefaultConnection implements practices.pool.Connection {
 	private final String DRIVER;
 	private final Databases DB;
-	private final String DB_NAME;
+	private final String CONNECTION_NAME;
 	private final DatabaseConfig DB_CONFIG;
 	private final boolean AUTO_COMMIT;
 	private final boolean PRINT_MESSAGES;
@@ -29,7 +29,7 @@ public final class DefaultConnection implements practices.pool.Connection {
 
 		DRIVER = driver;
 		DB = database;
-		DB_NAME = DB.getDatabaseName();
+		CONNECTION_NAME = "%s CONNECTION".formatted(DB.getDatabaseName());
 		DB_CONFIG = dbConfig;
 		AUTO_COMMIT = autoCommit;
 		PRINT_MESSAGES = printMessages;
@@ -43,9 +43,9 @@ public final class DefaultConnection implements practices.pool.Connection {
 				return;
 
 			else if (PRINT_MESSAGES)
-				System.out.println("%s: Attempt to establish database connection failed...".formatted(DB_NAME));
+				System.out.println("%s: Attempt to establish database connection failed...".formatted(CONNECTION_NAME));
 
-		throw new ConnectionException("%s: Couldn't establish database connection.".formatted(DB_NAME));
+		throw new ConnectionException("%s: Couldn't establish database connection.".formatted(CONNECTION_NAME));
 	}
 
 	public DefaultConnection(String driver, Databases databases, DatabaseConfig dbConfig, boolean autoCommit,
@@ -60,7 +60,7 @@ public final class DefaultConnection implements practices.pool.Connection {
 
 	public synchronized boolean connect(DatabaseConfig dbConfig, boolean autoCommit) {
 		if (dbConfig == null)
-			throw new NullPointerException("%s: Database configuration is null.".formatted(DB_NAME));
+			throw new NullPointerException("%s: Database configuration is null.".formatted(CONNECTION_NAME));
 
 		try {
 			// Close existing connection, if exists
@@ -72,7 +72,7 @@ public final class DefaultConnection implements practices.pool.Connection {
 			connection.setAutoCommit(autoCommit);
 
 			if (PRINT_MESSAGES)
-				System.out.println("%s: Connection successfully established...".formatted(DB_NAME));
+				System.out.println("%s: Connection successfully established...".formatted(CONNECTION_NAME));
 
 		} catch (SQLException e) {
 			setNull();
@@ -122,7 +122,7 @@ public final class DefaultConnection implements practices.pool.Connection {
 			connection.close();
 
 			if (PRINT_MESSAGES)
-				System.out.println("%s: Connection successfully closed...".formatted(DB_NAME));
+				System.out.println("%s: Connection successfully closed...".formatted(CONNECTION_NAME));
 
 		} catch (SQLException e) {
 			System.err.println(e);
@@ -174,7 +174,8 @@ public final class DefaultConnection implements practices.pool.Connection {
 
 	private synchronized void checkPrepStatement() throws NullPointerException {
 		if (prepStatement == null)
-			throw new NullPointerException("%s: Prepared statement hasn't been initialized.".formatted(DB_NAME));
+			throw new NullPointerException(
+					"%s: Prepared statement hasn't been initialized.".formatted(CONNECTION_NAME));
 	}
 
 	public synchronized void createPreparedStatement(String sql) {
@@ -205,7 +206,7 @@ public final class DefaultConnection implements practices.pool.Connection {
 
 	private void checkParamCounter(int paramCounter) throws SQLException {
 		if (paramCounter < 1)
-			throw new SQLException("%s: Invalid parameter index.".formatted(DB_NAME));
+			throw new SQLException("%s: Invalid parameter index.".formatted(CONNECTION_NAME));
 	}
 
 	public synchronized void setStringParameter(int paramCounter, String param)

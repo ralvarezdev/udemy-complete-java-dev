@@ -7,30 +7,36 @@ import practices.ConnectionException;
 public class DefaultPool implements Pool {
 	protected final String DRIVER;
 	protected final Databases DB;
-	protected final String DB_NAME;
+	protected final String POOL_NAME;
 	protected final DatabaseConfig DB_CONFIG;
 	protected final PoolConfig POOL_CONFIG;
 	protected final LinkedList<Connection> CONNECTIONS;
 	protected final int ATTEMPTS;
 	protected final boolean AUTO_COMMIT;
-	protected final boolean PRINT_MESSAGES;
+	protected final boolean PRINT_POOL_MESSAGES;
+	protected final boolean PRINT_CONNECTION_MESSAGES;
 
 	protected int currMaxSize = 0;
 
 	protected DefaultPool(String driver, Databases database, DatabaseConfig dbConfig, PoolConfig poolConfig,
-			boolean autoCommit, boolean printMessages, int attempts) throws NullPointerException {
+			boolean autoCommit, boolean printPoolMessages, boolean printConnectionMessages, int attempts)
+			throws NullPointerException {
 		if (driver == null || database == null || dbConfig == null || poolConfig == null)
 			throw new NullPointerException("There are some null configurations...");
 
 		// Set static attributes
 		DRIVER = driver;
 		DB = database;
-		DB_NAME = DB.getDatabaseName();
+		POOL_NAME = "%s POOL".formatted(DB.getDatabaseName());
 		DB_CONFIG = dbConfig;
 		POOL_CONFIG = poolConfig;
 		AUTO_COMMIT = autoCommit;
-		PRINT_MESSAGES = printMessages;
+		PRINT_POOL_MESSAGES = printPoolMessages;
+		PRINT_CONNECTION_MESSAGES = printConnectionMessages;
 		ATTEMPTS = (attempts < 1) ? 5 : attempts;
+
+		if (PRINT_POOL_MESSAGES)
+			System.out.println("%s: Initializing pool...".formatted(POOL_NAME));
 
 		// Initialize pool connections
 		CONNECTIONS = new LinkedList<>();
@@ -38,26 +44,28 @@ public class DefaultPool implements Pool {
 	}
 
 	protected DefaultPool(String driver, Databases database, DatabaseConfig dbConfig, PoolConfig poolConfig,
-			boolean autoCommit, boolean printMessages) throws NullPointerException {
-		this(driver, database, dbConfig, poolConfig, autoCommit, printMessages, 5);
+			boolean autoCommit, boolean printPoolMessages, boolean printConnectionMessages)
+			throws NullPointerException {
+		this(driver, database, dbConfig, poolConfig, autoCommit, printPoolMessages, printConnectionMessages, 5);
 	}
 
 	protected DefaultPool(String driver, Databases database, DatabaseConfig dbConfig, PoolConfig poolConfig)
 			throws NullPointerException {
-		this(driver, database, dbConfig, poolConfig, true, false);
+		this(driver, database, dbConfig, poolConfig, true, false, false);
 	}
 
 	public synchronized boolean increasePoolSize(int incrConns) {
 		if (currMaxSize + incrConns > POOL_CONFIG.maxConns())
 			return false;
 
-		if (PRINT_MESSAGES)
-			System.out.println("%s: Increasing pool size from %d to %d...".formatted(DB_NAME, currMaxSize,
+		if (PRINT_POOL_MESSAGES)
+			System.out.println("%s: Increasing pool size from %d to %d...".formatted(POOL_NAME, currMaxSize,
 					currMaxSize + incrConns));
 
 		for (int i = 0; i < incrConns;)
 			try {
-				CONNECTIONS.add(new DefaultConnection(DRIVER, DB, DB_CONFIG, AUTO_COMMIT, PRINT_MESSAGES, ATTEMPTS));
+				CONNECTIONS.add(
+						new DefaultConnection(DRIVER, DB, DB_CONFIG, AUTO_COMMIT, PRINT_CONNECTION_MESSAGES, ATTEMPTS));
 				i++;
 			}
 
@@ -117,5 +125,8 @@ public class DefaultPool implements Pool {
 			connection.disconnect();
 			currMaxSize--;
 		}
+
+		if (PRINT_POOL_MESSAGES)
+			System.out.println("%s: Pool successfully disconnected...".formatted(POOL_NAME));
 	}
 }

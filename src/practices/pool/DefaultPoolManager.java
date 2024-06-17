@@ -5,15 +5,21 @@ import java.sql.SQLException;
 import java.util.List;
 
 public final class DefaultPoolManager implements PoolManager {
+	private final Databases DB;
 	private final Pool POOL;
+	private final String POOL_MANAGER_NAME;
+	private final boolean PRINT_MESSAGES;
 
 	private Connection connection;
 
-	public DefaultPoolManager(Pool pool) throws NullPointerException {
+	public DefaultPoolManager(Databases database, Pool pool, boolean printMessages) throws NullPointerException {
 		if (pool == null)
 			throw new NullPointerException("Pool is null.");
 
+		DB = database;
 		POOL = pool;
+		POOL_MANAGER_NAME = "%s POOL MANAGER".formatted(DB.getDatabaseName());
+		PRINT_MESSAGES = printMessages;
 	}
 
 	private synchronized boolean isNull() {
@@ -27,25 +33,38 @@ public final class DefaultPoolManager implements PoolManager {
 	}
 
 	public synchronized void getConnection() {
-		if (isNull())
-			connection = POOL.getConnection();
+		if (PRINT_MESSAGES)
+			System.out.println("%s: Getting connection from pool...".formatted(POOL_MANAGER_NAME));
+
+		connection = POOL.getConnection();
 	}
 
 	public synchronized void putConnection() {
 		if (!isNull()) {
+			if (PRINT_MESSAGES)
+				System.out.println("%s: Returning connection to pool...".formatted(POOL_MANAGER_NAME));
+
 			POOL.putConnection(connection);
 			connection = null;
 		}
 	}
 
 	public synchronized void commit() {
-		if (isValid())
+		if (isValid()) {
+			if (PRINT_MESSAGES)
+				System.out.println("%s: Comitting...".formatted(POOL_MANAGER_NAME));
+
 			connection.commit();
+		}
 	}
 
 	public synchronized void rollback() {
-		if (isValid())
+		if (isValid()) {
+			if (PRINT_MESSAGES)
+				System.out.println("%s: Rolling back...".formatted(POOL_MANAGER_NAME));
+
 			connection.rollback();
+		}
 	}
 
 	public synchronized void createPreparedStatement(String sql) {
@@ -93,14 +112,22 @@ public final class DefaultPoolManager implements PoolManager {
 	}
 
 	public synchronized Integer executeUpdate() {
-		if (isValid())
+		if (isValid()) {
+			if (PRINT_MESSAGES)
+				System.out.println("%s: Executing update...".formatted(POOL_MANAGER_NAME));
+
 			return connection.executeUpdate();
+		}
 		return null;
 	}
 
 	public synchronized <T> List<T> executeQuery(ResultSetFunction<T> func) {
-		if (isValid())
+		if (isValid()) {
+			if (PRINT_MESSAGES)
+				System.out.println("%s: Executing query...".formatted(POOL_MANAGER_NAME));
+
 			return connection.executeQuery(func);
+		}
 		return null;
 	}
 }

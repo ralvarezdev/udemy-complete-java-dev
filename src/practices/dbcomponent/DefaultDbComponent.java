@@ -27,10 +27,15 @@ public class DefaultDbComponent implements DbComponent {
 	private final HashMap<Databases, Map<String, String>> DB_SENTENCES;
 	private final String DB_PROPS_FILENAME;
 	private final String POOL_PROPS_FILENAME;
-	private final boolean PRINT_MESSAGES;
+	private final boolean PRINT_POOL_MESSAGES;
+	private final boolean PRINT_POOL_MANAGER_MESSAGES;
+	private final boolean PRINT_CONNECTION_MESSAGES;
+
+	private Databases DEFAULT_DB = null;
 
 	public DefaultDbComponent(PropertiesReader propsReader, String dbPropsFilename, String poolPropsFilename,
-			boolean printMessages) throws NullPointerException {
+			boolean printPoolMessages, boolean printPoolManagerMessages, boolean printConnectionMessages)
+			throws NullPointerException {
 		if (dbPropsFilename == null || poolPropsFilename == null)
 			throw new NullPointerException("There are some database configuration null filenames.");
 
@@ -40,12 +45,16 @@ public class DefaultDbComponent implements DbComponent {
 		DB_SENTENCES = new HashMap<>();
 		DB_PROPS_FILENAME = dbPropsFilename;
 		POOL_PROPS_FILENAME = poolPropsFilename;
-		PRINT_MESSAGES = printMessages;
+		PRINT_POOL_MESSAGES = printPoolMessages;
+		PRINT_POOL_MANAGER_MESSAGES = printPoolManagerMessages;
+		PRINT_CONNECTION_MESSAGES = printConnectionMessages;
 	}
 
 	public DefaultDbComponent(List<Databases> databases, PropertiesReader propsReader, String dbPropsFilename,
-			String poolPropsFilename, boolean printMessages) throws NullPointerException, MissingPropertyException {
-		this(propsReader, dbPropsFilename, poolPropsFilename, printMessages);
+			String poolPropsFilename, boolean printPoolMessages, boolean printPoolManagerMessages,
+			boolean printConnectionMessages) throws NullPointerException, MissingPropertyException {
+		this(propsReader, dbPropsFilename, poolPropsFilename, printPoolMessages, printPoolManagerMessages,
+				printConnectionMessages);
 
 		var databasesSet = Set.copyOf(databases);
 
@@ -56,8 +65,10 @@ public class DefaultDbComponent implements DbComponent {
 	}
 
 	public DefaultDbComponent(Databases[] databases, PropertiesReader propsReader, String dbPropsFilename,
-			String poolPropsFilename, boolean printMessages) throws NullPointerException, MissingPropertyException {
-		this(Arrays.asList(databases), propsReader, dbPropsFilename, poolPropsFilename, printMessages);
+			String poolPropsFilename, boolean printPoolMessages, boolean printPoolManagerMessages,
+			boolean printConnectionMessages) throws NullPointerException, MissingPropertyException {
+		this(Arrays.asList(databases), propsReader, dbPropsFilename, poolPropsFilename, printPoolMessages,
+				printPoolManagerMessages, printConnectionMessages);
 	}
 
 	private synchronized void checkDatabase(Databases database) throws NullPointerException {
@@ -86,6 +97,11 @@ public class DefaultDbComponent implements DbComponent {
 			throw new NullPointerException("Database sentences haven't been loaded.");
 	}
 
+	private synchronized void checkDefaultDatabase() throws NullPointerException {
+		if (DEFAULT_DB == null)
+			throw new NullPointerException("Default database hasn't been set.");
+	}
+
 	private synchronized PoolManager getPoolManager(Databases database) throws NullPointerException {
 		checkPoolManager(database);
 		return POOL_MANAGERS.get(database);
@@ -94,6 +110,16 @@ public class DefaultDbComponent implements DbComponent {
 	private synchronized Pool getPool(Databases database) throws NullPointerException {
 		checkPool(database);
 		return POOLS.get(database);
+	}
+
+	public synchronized Databases getDefaultDatabases() throws NullPointerException {
+		checkDefaultDatabase();
+		return DEFAULT_DB;
+	}
+
+	public synchronized void setDefaultDatabase(Databases database) throws NullPointerException {
+		checkPoolManager(database);
+		DEFAULT_DB = database;
 	}
 
 	public synchronized void loadPoolManager(Databases database, boolean autoCommit)
@@ -107,11 +133,13 @@ public class DefaultDbComponent implements DbComponent {
 		PoolConfig poolConfig = database.getDatabasePoolConfig(PROPS_READER, POOL_PROPS_FILENAME);
 
 		Pool pool = switch (database) {
-		case POSTGRES -> DefaultPostgresPool.getInstance(dbConfig, poolConfig, autoCommit, PRINT_MESSAGES);
-		case MYSQL -> DefaultMySqlPool.getInstance(dbConfig, poolConfig, autoCommit, PRINT_MESSAGES);
+		case POSTGRES -> DefaultPostgresPool.getInstance(dbConfig, poolConfig, autoCommit, PRINT_POOL_MESSAGES,
+				PRINT_CONNECTION_MESSAGES);
+		case MYSQL -> DefaultMySqlPool.getInstance(dbConfig, poolConfig, autoCommit, PRINT_POOL_MESSAGES,
+				PRINT_CONNECTION_MESSAGES);
 		};
 
-		PoolManager poolManager = new DefaultPoolManager(pool);
+		PoolManager poolManager = new DefaultPoolManager(database, pool, PRINT_POOL_MANAGER_MESSAGES);
 
 		POOLS.put(database, pool);
 		POOL_MANAGERS.put(database, poolManager);

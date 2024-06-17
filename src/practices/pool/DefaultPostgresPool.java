@@ -4,17 +4,20 @@ public final class DefaultPostgresPool extends DefaultPool {
 	private static DefaultPostgresPool INSTANCE;
 
 	private DefaultPostgresPool(DatabaseConfig dbConfig, PoolConfig poolConfig, boolean autoCommit,
-			boolean printMessages) {
-		super("postgresql", Databases.POSTGRES, dbConfig, poolConfig, autoCommit, printMessages);
+			boolean printPoolMessages, boolean printConnectionMessages) {
+		super("postgresql", Databases.POSTGRES, dbConfig, poolConfig, autoCommit, printPoolMessages,
+				printConnectionMessages);
 	}
 
 	public synchronized static DefaultPostgresPool getInstance(DatabaseConfig dbConfig, PoolConfig poolConfig,
-			boolean autoCommit, boolean printMessages) throws NullPointerException {
+			boolean autoCommit, boolean printPoolMessages, boolean printConnectionMessages)
+			throws NullPointerException {
 		if (dbConfig == null || poolConfig == null)
 			throw new NullPointerException("There are some null configurations...");
 
 		if (INSTANCE == null)
-			INSTANCE = new DefaultPostgresPool(dbConfig, poolConfig, autoCommit, printMessages);
+			INSTANCE = new DefaultPostgresPool(dbConfig, poolConfig, autoCommit, printPoolMessages,
+					printConnectionMessages);
 
 		return INSTANCE;
 	}

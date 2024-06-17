@@ -14,7 +14,9 @@ public class Main {
 	public static void main(String[] args) {
 		String DB_PROPS_FILENAME = "pools-db.properties";
 		String POOL_PROPS_FILENAME = "pools-pool.properties";
-		boolean PRINT_MESSAGES = false;
+		boolean PRINT_POOL_MESSAGES = false;
+		boolean PRINT_POOL_MANAGER_MESSAGES = false;
+		boolean PRINT_CONNECTION_MESSAGES = false;
 
 		Databases DB = Databases.POSTGRES;
 		String DB_NAME = DB.getDatabaseName();
@@ -28,18 +30,20 @@ public class Main {
 
 		// Initialize DB Component
 		DefaultDbComponent dbComponent = new DefaultDbComponent(propsReader, DB_PROPS_FILENAME, POOL_PROPS_FILENAME,
-				PRINT_MESSAGES);
+				PRINT_POOL_MESSAGES, PRINT_POOL_MANAGER_MESSAGES, PRINT_CONNECTION_MESSAGES);
+
+		// Load Pool Manager, sentences and get connection
 		LinkedList<String> dbSentences;
 
-		// Load Pool Manager and get connection
 		try {
 			dbComponent.loadPoolManager(DB);
-			dbComponent.getConnection(DB);
+			dbComponent.setDefaultDatabase(DB);
+			dbComponent.getConnection();
 
 			// Load sentences
 			dbSentences = new LinkedList<>(Arrays.asList(SELECT_ALL, SELECT_ALL_BYID, INSERT));
 
-			dbComponent.loadSentences(DB, DATABASE_SENTENCES_FILENAME, dbSentences);
+			dbComponent.loadSentences(DATABASE_SENTENCES_FILENAME, dbSentences);
 
 		} catch (MissingPropertyException e) {
 			System.err.println(e);
@@ -61,9 +65,9 @@ public class Main {
 
 		try {
 			// Select all sentence
-			dbComponent.createPreparedStatement(DB, SELECT_ALL);
-			results = dbComponent.executeQuery(DB, func);
-			dbComponent.closePreparedStatement(DB);
+			dbComponent.createPreparedStatement(SELECT_ALL);
+			results = dbComponent.executeQuery(func);
+			dbComponent.closePreparedStatement();
 
 			System.out.println("- Select all sentence from %s".formatted(DB_NAME));
 			int lastID = results.size();
@@ -76,19 +80,19 @@ public class Main {
 			System.out.println();
 
 			/*
-			 * // Insert sentence dbComponent.createPreparedStatement(DB, INSERT);
-			 * dbComponent.setStringParameter(DB, 1, "Inserted from DB Component");
-			 * dbComponent.executeUpdate(DB); dbComponent.closePreparedStatement(DB);
+			 * // Insert sentence dbComponent.createPreparedStatement(INSERT);
+			 * dbComponent.setStringParameter(1, "Inserted from DB Component");
+			 * dbComponent.executeUpdate(); dbComponent.closePreparedStatement(DB);
 			 * 
 			 * System.out.println("- Inserting to %s".formatted(DB_NAME));
 			 * System.out.println(); lastID++;
 			 */
 
 			// Select all by ID sentence
-			dbComponent.createPreparedStatement(DB, SELECT_ALL_BYID);
-			dbComponent.setIntParameter(DB, 1, lastID);
-			results = dbComponent.executeQuery(DB, func);
-			dbComponent.closePreparedStatement(DB);
+			dbComponent.createPreparedStatement(SELECT_ALL_BYID);
+			dbComponent.setIntParameter(1, lastID);
+			results = dbComponent.executeQuery(func);
+			dbComponent.closePreparedStatement();
 
 			System.out.println("- Select all by ID sentence from %s".formatted(DB_NAME));
 
@@ -100,7 +104,7 @@ public class Main {
 		}
 
 		// Put connection
-		dbComponent.putConnection(DB);
-		dbComponent.disconnectAll(DB);
+		dbComponent.putConnection();
+		dbComponent.disconnectAll();
 	}
 }

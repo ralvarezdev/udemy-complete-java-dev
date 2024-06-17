@@ -15,12 +15,13 @@ public class Main {
 		Pool pool = null;
 
 		// Read properties
+		Databases db = Databases.POSTGRES;
+
 		try {
 			DefaultPropertiesReader propsReader = new DefaultPropertiesReader();
-			Databases db = Databases.POSTGRES;
 			DatabaseConfig dbConfig = db.getDatabaseConfig(propsReader, DB_PROPS_FILENAME);
 			PoolConfig poolConfig = db.getDatabasePoolConfig(propsReader, POOL_PROPS_FILENAME);
-			pool = DefaultPostgresPool.getInstance(dbConfig, poolConfig, true, true);
+			pool = DefaultPostgresPool.getInstance(dbConfig, poolConfig, true, true, false);
 
 		} catch (NullPointerException | MissingPropertyException e) {
 			System.err.println(e);
@@ -28,7 +29,7 @@ public class Main {
 		}
 
 		for (int i = 1; i <= MAX_THREADS; i++) {
-			PoolManager poolManager = new DefaultPoolManager(pool);
+			PoolManager poolManager = new DefaultPoolManager(db, pool, false);
 
 			CustThread thread = new CustThread(poolManager);
 			threads.add(thread);
