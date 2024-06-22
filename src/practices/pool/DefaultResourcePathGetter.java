@@ -2,6 +2,7 @@ package practices.pool;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.Properties;
 
 public class DefaultResourcePathGetter implements ResourcePathGetter {
 	protected final ClassLoader CONTEXT;
@@ -10,9 +11,18 @@ public class DefaultResourcePathGetter implements ResourcePathGetter {
 		CONTEXT = Thread.currentThread().getContextClassLoader();
 	}
 
-	public String getResourcePath(String resourceFilename) throws NullPointerException, FileNotFoundException {
+	protected void checkResourceFilename(String resourceFilename) throws NullPointerException {
 		if (resourceFilename == null)
 			throw new NullPointerException("Resource filename is null.");
+	}
+
+	protected void checkProperties(Properties props) throws NullPointerException {
+		if (props == null)
+			throw new NullPointerException("Properties instance is null...");
+	}
+
+	public String getResourcePath(String resourceFilename) throws NullPointerException, FileNotFoundException {
+		checkResourceFilename(resourceFilename);
 
 		URL resource = CONTEXT.getResource(resourceFilename);
 

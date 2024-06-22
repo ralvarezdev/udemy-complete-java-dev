@@ -27,13 +27,12 @@ public class DefaultFileReader extends DefaultResourcePathGetter implements File
 		return resource.getPath();
 	}
 
-	public StringBuilder getFileContent(String resourceFilename) throws NullPointerException, FileNotFoundException {
-		String resourcePath = getResourcePath(resourceFilename);
+	public StringBuilder getFileContent(String filePath) throws NullPointerException, FileNotFoundException {
 		StringBuilder content = new StringBuilder();
 
-		File resourceFile = new File(resourcePath);
+		File file = new File(filePath);
 
-		try (FileInputStream inputStream = new FileInputStream(resourceFile)) {
+		try (FileInputStream inputStream = new FileInputStream(file)) {
 
 			try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
 

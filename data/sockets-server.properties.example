@@ -1,0 +1,3 @@
+# Server sockets practice properties. Should be placed inside 'bin' directory and its extension should be renamed as '.properties'
+SERVER_PORT=
+SERVER_IP=

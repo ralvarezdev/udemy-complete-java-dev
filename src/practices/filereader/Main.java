@@ -23,7 +23,7 @@ public class Main {
 		StringBuilder content = null;
 
 		try {
-			content = fileReader.getFileContent(CSV_FILENAME);
+			content = fileReader.getResourceFileContent(CSV_FILENAME);
 
 		} catch (FileNotFoundException e) {
 			System.err.println(e);
