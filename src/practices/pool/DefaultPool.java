@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import practices.ConnectionException;
 
-public class DefaultPool implements Pool {
+public abstract class DefaultPool implements Pool {
 	protected final String DRIVER;
 	protected final Databases DB;
 	protected final String POOL_NAME;

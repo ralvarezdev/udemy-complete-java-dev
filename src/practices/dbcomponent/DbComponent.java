@@ -1,5 +1,6 @@
 package practices.dbcomponent;
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -15,9 +16,10 @@ public interface DbComponent {
 	public void setDefaultDatabase(Databases database) throws NullPointerException;
 
 	public void loadPoolManager(Databases database, boolean autoCommit)
-			throws NullPointerException, MissingPropertyException;
+			throws NullPointerException, FileNotFoundException, MissingPropertyException;
 
-	public default void loadPoolManager(Databases database) throws NullPointerException, MissingPropertyException {
+	public default void loadPoolManager(Databases database)
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		loadPoolManager(database, true);
 	}
 
@@ -36,21 +38,21 @@ public interface DbComponent {
 	}
 
 	public void loadSentences(Databases database, String resourceFilename, List<String> sentenceFieldsName)
-			throws NullPointerException, MissingPropertyException;
+			throws NullPointerException, FileNotFoundException, MissingPropertyException;
 
 	public default void loadSentences(String resourceFilename, List<String> sentenceFieldsName)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		Databases database = getDefaultDatabases();
 		loadSentences(database, resourceFilename, sentenceFieldsName);
 	}
 
 	public default void loadSentences(Databases database, String resourceFilename, String... sentenceFieldsName)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		loadSentences(database, resourceFilename, Arrays.asList(sentenceFieldsName));
 	}
 
 	public default void loadSentences(String resourceFilename, String... sentenceFieldsName)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		loadSentences(resourceFilename, Arrays.asList(sentenceFieldsName));
 	}
 

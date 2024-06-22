@@ -25,6 +25,7 @@ public class CustThread extends Thread {
 		});
 
 		POOL_MANAGER.closePreparedStatement();
+
 		POOL_MANAGER.putConnection();
 
 		System.out.println("Thread %-5s: %-10d".formatted(this.getName(), prodIds.size()));

@@ -1,5 +1,6 @@
 package practices.pool;
 
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 
 import practices.MissingPropertyException;
@@ -23,7 +24,7 @@ public class Main {
 			PoolConfig poolConfig = db.getDatabasePoolConfig(propsReader, POOL_PROPS_FILENAME);
 			pool = DefaultPostgresPool.getInstance(dbConfig, poolConfig, true, true, false);
 
-		} catch (NullPointerException | MissingPropertyException e) {
+		} catch (NullPointerException | FileNotFoundException | MissingPropertyException e) {
 			System.err.println(e);
 			System.exit(-1);
 		}

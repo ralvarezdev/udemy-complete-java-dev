@@ -1,5 +1,6 @@
 package practices.pool;
 
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public enum Databases {
 	}
 
 	public Map<String, String> getDatabaseProperties(PropertiesReader propsReader, String propsFilename)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		checkProps(propsReader, propsFilename);
 
 		DatabaseProperties[] dbPropsFields = DatabaseProperties.values();
@@ -41,7 +42,7 @@ public enum Databases {
 	}
 
 	public DatabaseConfig getDatabaseConfig(PropertiesReader propsReader, String propsFilename)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		Map<String, String> dbProps = getDatabaseProperties(propsReader, propsFilename);
 
 		// Get properties values
@@ -55,7 +56,7 @@ public enum Databases {
 	}
 
 	public Map<String, String> getDatabasePoolProperties(PropertiesReader propsReader, String propsFilename)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		checkProps(propsReader, propsFilename);
 
 		DatabasePoolProperties[] poolPropsFields = DatabasePoolProperties.values();
@@ -68,7 +69,7 @@ public enum Databases {
 	}
 
 	public PoolConfig getDatabasePoolConfig(PropertiesReader propsReader, String propsFilename)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		Map<String, String> poolProps = getDatabasePoolProperties(propsReader, propsFilename);
 
 		// Get properties values

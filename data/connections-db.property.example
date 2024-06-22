@@ -1,0 +1,6 @@
+# Database connection details example. Should be placed inside 'bin' directory and its extension should be renamed as '.properties'
+DBHOST=
+PORT=
+DBNAME=
+USER=
+DBPASS=

@@ -1,5 +1,6 @@
 package practices.dbcomponent;
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -52,7 +53,8 @@ public class DefaultDbComponent implements DbComponent {
 
 	public DefaultDbComponent(List<Databases> databases, PropertiesReader propsReader, String dbPropsFilename,
 			String poolPropsFilename, boolean printPoolMessages, boolean printPoolManagerMessages,
-			boolean printConnectionMessages) throws NullPointerException, MissingPropertyException {
+			boolean printConnectionMessages)
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		this(propsReader, dbPropsFilename, poolPropsFilename, printPoolMessages, printPoolManagerMessages,
 				printConnectionMessages);
 
@@ -66,7 +68,8 @@ public class DefaultDbComponent implements DbComponent {
 
 	public DefaultDbComponent(Databases[] databases, PropertiesReader propsReader, String dbPropsFilename,
 			String poolPropsFilename, boolean printPoolMessages, boolean printPoolManagerMessages,
-			boolean printConnectionMessages) throws NullPointerException, MissingPropertyException {
+			boolean printConnectionMessages)
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		this(Arrays.asList(databases), propsReader, dbPropsFilename, poolPropsFilename, printPoolMessages,
 				printPoolManagerMessages, printConnectionMessages);
 	}
@@ -123,7 +126,7 @@ public class DefaultDbComponent implements DbComponent {
 	}
 
 	public synchronized void loadPoolManager(Databases database, boolean autoCommit)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		checkDatabase(database);
 
 		if (POOL_MANAGERS.containsKey(database))
@@ -154,7 +157,7 @@ public class DefaultDbComponent implements DbComponent {
 	}
 
 	public synchronized void loadSentences(Databases database, String resourceFilename, List<String> sentenceFieldsName)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, FileNotFoundException, MissingPropertyException {
 		Map<String, String> sentencesMap = PROPS_READER.getProperties(resourceFilename, sentenceFieldsName);
 		DB_SENTENCES.put(database, sentencesMap);
 	}

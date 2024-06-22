@@ -24,6 +24,6 @@ public final class DefaultPostgresPool extends DefaultPool {
 
 	public synchronized static DefaultPostgresPool getInstance(DatabaseConfig dbConfig, PoolConfig poolConfig)
 			throws NullPointerException {
-		return getInstance(dbConfig, poolConfig, true, true);
+		return getInstance(dbConfig, poolConfig, true, true, false);
 	}
 }

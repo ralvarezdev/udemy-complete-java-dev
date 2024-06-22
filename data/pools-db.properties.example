@@ -1,4 +1,4 @@
-# Database connection details example. Should be placed inside 'bin' directory
+# Database connection details example. Should be placed inside 'bin' directory and its extension should be renamed as '.properties'
 DRIVER1_DBHOST=
 DRIVER1_DBPORT=
 DRIVER1_DBNAME=

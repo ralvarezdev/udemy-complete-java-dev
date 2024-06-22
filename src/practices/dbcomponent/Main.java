@@ -1,5 +1,6 @@
 package practices.dbcomponent;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -14,9 +15,9 @@ public class Main {
 	public static void main(String[] args) {
 		String DB_PROPS_FILENAME = "pools-db.properties";
 		String POOL_PROPS_FILENAME = "pools-pool.properties";
-		boolean PRINT_POOL_MESSAGES = false;
-		boolean PRINT_POOL_MANAGER_MESSAGES = false;
-		boolean PRINT_CONNECTION_MESSAGES = false;
+		boolean PRINT_POOL_MESSAGES = true;
+		boolean PRINT_POOL_MANAGER_MESSAGES = true;
+		boolean PRINT_CONNECTION_MESSAGES = true;
 
 		Databases DB = Databases.POSTGRES;
 		String DB_NAME = DB.getDatabaseName();
@@ -45,7 +46,7 @@ public class Main {
 
 			dbComponent.loadSentences(DATABASE_SENTENCES_FILENAME, dbSentences);
 
-		} catch (MissingPropertyException e) {
+		} catch (FileNotFoundException | MissingPropertyException e) {
 			System.err.println(e);
 			System.exit(-1);
 		}
@@ -83,7 +84,7 @@ public class Main {
 			 * // Insert sentence dbComponent.createPreparedStatement(INSERT);
 			 * dbComponent.setStringParameter(1, "Inserted from DB Component");
 			 * dbComponent.executeUpdate(); dbComponent.closePreparedStatement(DB);
-			 * 
+			 *
 			 * System.out.println("- Inserting to %s".formatted(DB_NAME));
 			 * System.out.println(); lastID++;
 			 */
