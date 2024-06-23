@@ -1,4 +1,4 @@
-package practices.serversockets;
+package practice.sockets;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -9,8 +9,7 @@ public class ClientSocketHandler extends Thread {
 	private final BiConsumer<Socket, String> HANDLER;
 	private final boolean PRINT_SOCKET_MESSAGES;
 
-	public ClientSocketHandler(Socket clientSocket, BiConsumer<Socket, String> handler,
-			boolean printSocketMessages) {
+	public ClientSocketHandler(Socket clientSocket, BiConsumer<Socket, String> handler, boolean printSocketMessages) {
 		if (clientSocket == null)
 			throw new NullPointerException("%s: Client socket is null...".formatted(getName()));
 

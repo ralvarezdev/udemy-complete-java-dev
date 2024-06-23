@@ -1,46 +1,42 @@
-package practices.serversockets;
+package practice.sockets;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.function.BiConsumer;
 
 public abstract class ServerSocket {
-	protected final String NAME;
-	protected final java.net.ServerSocket SERVER_SOCKET;
-	protected final int PORT;
 	protected final boolean PRINT_SERVER_MESSAGES;
 	protected final boolean PRINT_SOCKET_MESSAGES;
 
+	protected String NAME;
+	protected java.net.ServerSocket SERVER_SOCKET;
+	protected int PORT;
 	protected BiConsumer<Socket, String> SOCKET_HANDLER = null;
 
-	public ServerSocket(int port, boolean printServerMessages, boolean printSocketMessages) throws IOException {
-		SERVER_SOCKET = new java.net.ServerSocket(port);
-		PORT = (port != 0) ? port : SERVER_SOCKET.getLocalPort();
-
+	public ServerSocket(boolean printServerMessages, boolean printSocketMessages) {
 		PRINT_SERVER_MESSAGES = printServerMessages;
 		PRINT_SOCKET_MESSAGES = printSocketMessages;
-		NAME = "SERVER SOCKET %d".formatted(PORT);
-
-		if (printServerMessages)
-			System.out.println("Initializing server socket at port %d".formatted(PORT));
 	}
 
-	public ServerSocket(boolean printServerMessages, boolean printSocketMessages) throws IOException {
-		this(0, printServerMessages, printSocketMessages);
-	}
-
-	public ServerSocket() throws IOException {
-		this(0, false, false);
+	public ServerSocket() {
+		this(false, false);
 	}
 
 	protected void setSocketHandler(BiConsumer<Socket, String> socketHandler) {
 		SOCKET_HANDLER = socketHandler;
 
 		if (PRINT_SERVER_MESSAGES)
-			System.out.println("%s: Successfully set socket handler".formatted(NAME));
+			System.out.println("Successfully set socket handler...".formatted(NAME));
 	}
 
-	public void start() throws NullPointerException {
+	protected void start(int port) throws NullPointerException, IOException {
+		SERVER_SOCKET = new java.net.ServerSocket(port);
+		PORT = (port != 0) ? port : SERVER_SOCKET.getLocalPort();
+		NAME = "SERVER SOCKET %d".formatted(PORT);
+
+		if (PRINT_SERVER_MESSAGES)
+			System.out.println("Initializing server socket at port %d".formatted(PORT));
+
 		if (SOCKET_HANDLER == null)
 			throw new NullPointerException("Socket handler hasn't been set...");
 
@@ -51,8 +47,10 @@ public abstract class ServerSocket {
 				socket = SERVER_SOCKET.accept();
 
 			} catch (IOException e) {
-				System.err.println(e);
-				continue;
+				if (PRINT_SERVER_MESSAGES)
+					System.out.println("%s: Server socket successfully closed...".formatted(NAME));
+
+				break;
 			}
 
 			if (PRINT_SERVER_MESSAGES)
@@ -62,13 +60,20 @@ public abstract class ServerSocket {
 		}
 	}
 
+	public abstract Thread startThread(int port);
+
+	public abstract Thread startThread();
+
 	public void close() {
+		if (SERVER_SOCKET == null)
+			throw new NullPointerException("Server socket hasn't been started...");
+
 		try {
 			if (!SERVER_SOCKET.isClosed()) {
-				SERVER_SOCKET.close();
-
 				if (PRINT_SERVER_MESSAGES)
-					System.out.println("%s: Server socket successfully closed...".formatted(NAME));
+					System.out.println("%s: Closing server socket...".formatted(NAME));
+
+				SERVER_SOCKET.close();
 			}
 
 		} catch (IOException e) {
