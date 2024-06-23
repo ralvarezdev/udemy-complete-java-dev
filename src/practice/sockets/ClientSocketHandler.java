@@ -27,6 +27,7 @@ public class ClientSocketHandler extends Thread {
 
 		try {
 			CLIENT_SOCKET.close();
+
 			if (PRINT_SOCKET_MESSAGES)
 				System.out.println("%s: Client socket successfully closed...".formatted(getName()));
 

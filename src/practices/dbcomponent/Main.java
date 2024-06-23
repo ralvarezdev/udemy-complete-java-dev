@@ -1,14 +1,14 @@
 package practices.dbcomponent;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import practices.MissingPropertyException;
+import practices.files.DefaultPropertiesReader;
 import practices.pool.Databases;
-import practices.pool.DefaultPropertiesReader;
 import practices.pool.ResultSetFunction;
 
 public class Main {
@@ -46,7 +46,7 @@ public class Main {
 
 			dbComponent.loadSentences(DATABASE_SENTENCES_FILENAME, dbSentences);
 
-		} catch (FileNotFoundException | MissingPropertyException e) {
+		} catch (IOException | MissingPropertyException e) {
 			System.err.println(e);
 			System.exit(-1);
 		}

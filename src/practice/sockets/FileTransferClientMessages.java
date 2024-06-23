@@ -1,11 +1,11 @@
 package practice.sockets;
 
-public enum FileTransferClient {
+public enum FileTransferClientMessages {
 	MORE("+"), FORCED_END("."), UNDEFINED("0");
 
 	private final String message;
 
-	private FileTransferClient(String message) {
+	private FileTransferClientMessages(String message) {
 		this.message = message;
 	}
 
@@ -13,11 +13,11 @@ public enum FileTransferClient {
 		return message;
 	}
 
-	public static FileTransferClient fromString(String message) {
+	public static FileTransferClientMessages fromString(String message) {
 		if (message == null)
 			return UNDEFINED;
 
-		for (FileTransferClient f : FileTransferClient.values())
+		for (FileTransferClientMessages f : FileTransferClientMessages.values())
 			if (f.getMessage().equalsIgnoreCase(message))
 				return f;
 

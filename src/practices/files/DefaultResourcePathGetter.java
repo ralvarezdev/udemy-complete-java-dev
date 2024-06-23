@@ -1,6 +1,7 @@
-package practices.pool;
+package practices.files;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -21,7 +22,7 @@ public class DefaultResourcePathGetter implements ResourcePathGetter {
 			throw new NullPointerException("Properties instance is null...");
 	}
 
-	public String getResourcePath(String resourceFilename) throws NullPointerException, FileNotFoundException {
+	public String getResourcePath(String resourceFilename) throws NullPointerException, IOException {
 		checkResourceFilename(resourceFilename);
 
 		URL resource = CONTEXT.getResource(resourceFilename);

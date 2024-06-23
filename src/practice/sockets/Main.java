@@ -1,14 +1,12 @@
 package practice.sockets;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
 import practices.MissingPropertyException;
-import practices.filereader.DefaultFileReader;
-import practices.filereader.DefaultFileWriter;
-import practices.pool.DefaultPropertiesReader;
+import practices.files.DefaultFileReader;
+import practices.files.DefaultFileWriter;
+import practices.files.DefaultPropertiesReader;
 
 public class Main {
 	public static void main(String[] args) {
@@ -27,14 +25,14 @@ public class Main {
 			String portString = propsReader.getProperty(SERVER_PROPERTIES, PORT_FIELDNAME);
 			port = Integer.parseInt(portString);
 
-		} catch (FileNotFoundException | NumberFormatException | MissingPropertyException e) {
+		} catch (IOException | NumberFormatException | MissingPropertyException e) {
 			System.err.println(e);
 			System.exit(-1);
 		}
 
 		// Initialize server socket
 		FileTransferServerSocket serverSocket = getServerSocket();
-		Thread serverSocketThread = serverSocket.startThread(port);
+		serverSocket.startThread(port);
 
 		// Wait n milliseconds to start client socket
 		try {
@@ -49,7 +47,7 @@ public class Main {
 		try {
 			initClientSocket(ip, port);
 
-		} catch (NullPointerException | FileNotFoundException e) {
+		} catch (NullPointerException | IOException e) {
 			System.err.println(e);
 		}
 
@@ -74,7 +72,7 @@ public class Main {
 			serverSocket = new FileTransferServerSocket(fileReader, FILES_PATH, MAX_CHAR, PRINT_SERVER_MESSAGES,
 					PRINT_SOCKET_MESSAGES);
 
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			System.err.println(e);
 			System.exit(-1);
 		}
@@ -82,12 +80,11 @@ public class Main {
 		return serverSocket;
 	}
 
-	public static void initClientSocket(String ip, int port) throws NullPointerException, FileNotFoundException {
-		String FILENAME = "people";
+	public static void initClientSocket(String ip, int port) throws NullPointerException, IOException {
+		String KEY = "people";
 		String READ_CSV_FILENAME = "read-people.csv";
-		String READ_CSV_PATH = String.join("\\", "bin", READ_CSV_FILENAME);
 
-		boolean PRINT_SOCKET_MESSAGES = false;
+		boolean PRINT_SOCKET_MESSAGES = true;
 
 		FileTransferClientSocket clientSocket = null;
 		String content = null;
@@ -96,7 +93,7 @@ public class Main {
 		try {
 			clientSocket = new FileTransferClientSocket(PRINT_SOCKET_MESSAGES);
 			clientSocket.start(ip, port);
-			content = clientSocket.getFileContent(FILENAME);
+			content = clientSocket.getFileContent(KEY);
 
 		} catch (IOException e) {
 			System.err.println(e);
@@ -106,21 +103,6 @@ public class Main {
 
 		// Write file content
 		DefaultFileWriter fileWriter = new DefaultFileWriter();
-
-		try {
-
-			try {
-				fileWriter.getResourcePath(READ_CSV_FILENAME);
-
-			} catch (FileNotFoundException e) {
-				File writeFile = new File(READ_CSV_PATH);
-				writeFile.createNewFile();
-			}
-
-		} catch (IOException f) {
-			System.err.println(f);
-		}
-
 		fileWriter.overwriteFileContent(READ_CSV_FILENAME, content);
 	}
 }

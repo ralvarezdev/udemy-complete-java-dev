@@ -1,13 +1,11 @@
-package practices.filereader;
+package practices.files;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import practices.pool.DefaultResourcePathGetter;
-
-public class DefaultFileWriter extends DefaultResourcePathGetter implements practices.filereader.FileWriter {
+public class DefaultFileWriter extends DefaultResourcePathGetter implements practices.files.FileWriter {
 	public DefaultFileWriter() {
 		super();
 	}
@@ -17,11 +15,24 @@ public class DefaultFileWriter extends DefaultResourcePathGetter implements prac
 	}
 
 	public void writeFileContent(String resourceFilename, String content, boolean append)
-			throws NullPointerException, FileNotFoundException {
+			throws NullPointerException, IOException {
 		if (isContentEmpty(content))
 			return;
 
-		String resourcePath = getResourcePath(resourceFilename);
+		String resourcePath = null;
+		try {
+			String filePath = getResourcePath("");
+			File writeFile = new File(filePath + resourceFilename);
+
+			// Create file
+			if (!writeFile.exists())
+				writeFile.createNewFile();
+
+			resourcePath = getResourcePath(resourceFilename);
+
+		} catch (IOException e) {
+			System.err.println(e);
+		}
 
 		try (FileWriter resourceFileWriter = new FileWriter(resourcePath, append)) {
 

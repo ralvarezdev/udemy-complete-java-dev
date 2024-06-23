@@ -1,6 +1,6 @@
-package practices.pool;
+package practices.files;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +12,13 @@ public interface PropertiesReader extends ResourcePathGetter {
 	public String getProperty(Properties props, String fieldName) throws NullPointerException, MissingPropertyException;
 
 	public String getProperty(String resourceFilename, String fieldName)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException;
+			throws NullPointerException, IOException, MissingPropertyException;
 
 	public Map<String, String> getProperties(Properties props, List<String> propsFieldsName)
 			throws NullPointerException, MissingPropertyException;
 
 	public Map<String, String> getProperties(String resourceFilename, List<String> propsName)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException;
+			throws NullPointerException, IOException, MissingPropertyException;
 
 	public default Map<String, String> getProperties(Properties props, String... propsName)
 			throws NullPointerException, MissingPropertyException {
@@ -26,7 +26,7 @@ public interface PropertiesReader extends ResourcePathGetter {
 	}
 
 	public default Map<String, String> getProperties(String resourceFilename, String... propsName)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException {
+			throws NullPointerException, IOException, MissingPropertyException {
 		return getProperties(resourceFilename, Arrays.asList(propsName));
 	}
 }

@@ -5,21 +5,20 @@ public class FileTransferClientSocket extends ClientSocket {
 		super(printSocketMessages);
 	}
 
-	private String send(FileTransferClient f) {
+	private String send(FileTransferClientMessages f) {
 		return send(f.getMessage());
 	}
 
 	public String getFileContent(String filename) {
 		String serverResponseString = send(filename);
-		FileTransferServer serverResponse = FileTransferServer.fromString(serverResponseString);
-		String message = serverResponse.getMessage();
+		FileTransferServerMessages serverResponse = FileTransferServerMessages.fromString(serverResponseString);
 
-		if (message == FileTransferServer.NOT_FOUND.getMessage()) {
+		if (serverResponse == FileTransferServerMessages.NOT_FOUND) {
 			System.out.println("File '%s' not found on server...".formatted(filename));
 			return null;
 		}
 
-		if (message != FileTransferServer.FOUND.getMessage()) {
+		if (serverResponse != FileTransferServerMessages.FOUND) {
 			System.out.println("Unregistered response from server...");
 			return null;
 		}
@@ -29,31 +28,37 @@ public class FileTransferClientSocket extends ClientSocket {
 
 		while (true) {
 
-			serverResponseString = send(FileTransferClient.MORE);
-			serverResponse = FileTransferServer.fromString(serverResponseString);
-			message = serverResponse.getMessage();
+			serverResponseString = send(FileTransferClientMessages.MORE);
+			serverResponse = FileTransferServerMessages.fromString(serverResponseString);
 
-			if (message == FileTransferServer.FINISHED.getMessage()) {
+			if (serverResponse == FileTransferServerMessages.END_FILE) {
 				if (PRINT_SOCKET_MESSAGES)
 					System.out.println("File content successfully read from server...");
 				break;
 			}
 
-			if (PRINT_SOCKET_MESSAGES)
-				System.out.println("Getting more content from server...");
-
-			if (message == FileTransferServer.START_LINE.getMessage()) {
+			if (serverResponse == FileTransferServerMessages.START_LINE) {
 				line = new StringBuilder();
-				continue;
+
+				if (PRINT_SOCKET_MESSAGES) {
+					// System.out.println();
+					System.out.println("Getting line from server...");
+				}
 			}
 
-			else if (message == FileTransferServer.END_LINE.getMessage()) {
+			else if (serverResponse != FileTransferServerMessages.END_LINE) {
+				line.append(serverResponseString);
+
+				/*
+				 * if (PRINT_SOCKET_MESSAGES) System.out.println(serverResponseString);
+				 */
+			}
+
+			else {
 				line.append("\n");
 				content.append(line);
-				continue;
 			}
 
-			line.append(serverResponseString);
 		}
 
 		return content.toString();

@@ -1,7 +1,6 @@
-package practices.pool;
+package practices.files;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -31,21 +30,16 @@ public final class DefaultPropertiesReader extends DefaultResourcePathGetter imp
 	}
 
 	public String getProperty(String resourceFilename, String fieldName)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException {
+			throws NullPointerException, IOException, MissingPropertyException {
 		if (fieldName == null)
 			new NullPointerException("Properties field name is null.");
 
 		String resourcePath = getResourcePath(resourceFilename);
 
-		try {
-			Properties props = new Properties();
-			props.load(new FileInputStream(resourcePath));
+		Properties props = new Properties();
+		props.load(new FileInputStream(resourcePath));
 
-			return getProperty(props, fieldName);
-
-		} catch (IOException e) {
-			throw new MissingPropertyException("Properties file couldn't be loaded.");
-		}
+		return getProperty(props, fieldName);
 	}
 
 	public Map<String, String> getProperties(Properties props, List<String> propsFieldsName)
@@ -68,20 +62,15 @@ public final class DefaultPropertiesReader extends DefaultResourcePathGetter imp
 	}
 
 	public Map<String, String> getProperties(String resourceFilename, List<String> propsFieldsName)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException {
+			throws NullPointerException, IOException, MissingPropertyException {
 		if (propsFieldsName == null)
 			new NullPointerException("Properties fields name list is null.");
 
 		String resourcePath = getResourcePath(resourceFilename);
 
-		try {
-			Properties props = new Properties();
-			props.load(new FileInputStream(resourcePath));
+		Properties props = new Properties();
+		props.load(new FileInputStream(resourcePath));
 
-			return getProperties(props, propsFieldsName);
-
-		} catch (IOException e) {
-			throw new MissingPropertyException("Properties file couldn't be loaded.");
-		}
+		return getProperties(props, propsFieldsName);
 	}
 }

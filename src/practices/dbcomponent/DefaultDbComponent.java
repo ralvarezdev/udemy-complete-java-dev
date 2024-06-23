@@ -1,6 +1,6 @@
 package practices.dbcomponent;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import practices.MissingPropertyException;
+import practices.files.PropertiesReader;
 import practices.pool.DatabaseConfig;
 import practices.pool.Databases;
 import practices.pool.DefaultMySqlPool;
@@ -18,7 +19,6 @@ import practices.pool.DefaultPostgresPool;
 import practices.pool.Pool;
 import practices.pool.PoolConfig;
 import practices.pool.PoolManager;
-import practices.pool.PropertiesReader;
 import practices.pool.ResultSetFunction;
 
 public class DefaultDbComponent implements DbComponent {
@@ -53,8 +53,7 @@ public class DefaultDbComponent implements DbComponent {
 
 	public DefaultDbComponent(List<Databases> databases, PropertiesReader propsReader, String dbPropsFilename,
 			String poolPropsFilename, boolean printPoolMessages, boolean printPoolManagerMessages,
-			boolean printConnectionMessages)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException {
+			boolean printConnectionMessages) throws NullPointerException, IOException, MissingPropertyException {
 		this(propsReader, dbPropsFilename, poolPropsFilename, printPoolMessages, printPoolManagerMessages,
 				printConnectionMessages);
 
@@ -68,8 +67,7 @@ public class DefaultDbComponent implements DbComponent {
 
 	public DefaultDbComponent(Databases[] databases, PropertiesReader propsReader, String dbPropsFilename,
 			String poolPropsFilename, boolean printPoolMessages, boolean printPoolManagerMessages,
-			boolean printConnectionMessages)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException {
+			boolean printConnectionMessages) throws NullPointerException, IOException, MissingPropertyException {
 		this(Arrays.asList(databases), propsReader, dbPropsFilename, poolPropsFilename, printPoolMessages,
 				printPoolManagerMessages, printConnectionMessages);
 	}
@@ -126,7 +124,7 @@ public class DefaultDbComponent implements DbComponent {
 	}
 
 	public synchronized void loadPoolManager(Databases database, boolean autoCommit)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException {
+			throws NullPointerException, IOException, MissingPropertyException {
 		checkDatabase(database);
 
 		if (POOL_MANAGERS.containsKey(database))
@@ -157,7 +155,7 @@ public class DefaultDbComponent implements DbComponent {
 	}
 
 	public synchronized void loadSentences(Databases database, String resourceFilename, List<String> sentenceFieldsName)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException {
+			throws NullPointerException, IOException, MissingPropertyException {
 		Map<String, String> sentencesMap = PROPS_READER.getProperties(resourceFilename, sentenceFieldsName);
 		DB_SENTENCES.put(database, sentencesMap);
 	}

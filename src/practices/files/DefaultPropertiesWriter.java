@@ -1,13 +1,10 @@
-package practices.pool;
+package practices.files;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
-
-import practices.MissingPropertyException;
 
 public class DefaultPropertiesWriter extends DefaultResourcePathGetter implements PropertiesWriter {
 	public DefaultPropertiesWriter() {
@@ -27,32 +24,22 @@ public class DefaultPropertiesWriter extends DefaultResourcePathGetter implement
 	}
 
 	public void setProperties(String resourceFilename, Map<String, String> fields, String comment)
-			throws NullPointerException, FileNotFoundException, MissingPropertyException {
+			throws NullPointerException, IOException {
 		String resourcePath = getResourcePath(resourceFilename);
 		Properties props = null;
 
-		try {
-			props = new Properties();
-			props.load(new FileInputStream(resourcePath));
+		props = new Properties();
+		props.load(new FileInputStream(resourcePath));
 
-			setProperties(props, fields);
-
-		} catch (IOException e) {
-			throw new MissingPropertyException("Properties file couldn't be loaded.");
-		}
+		setProperties(props, fields);
 
 		writeProperties(props, resourcePath, comment);
 	}
 
 	public void writeProperties(Properties props, String resourcePath, String comment)
-			throws NullPointerException, MissingPropertyException {
+			throws NullPointerException, IOException {
 		checkProperties(props);
 
-		try {
-			props.store(new FileWriter(resourcePath), comment);
-
-		} catch (IOException e) {
-			throw new MissingPropertyException("Properties file couldn't be loaded.");
-		}
+		props.store(new FileWriter(resourcePath), comment);
 	}
 }
