@@ -19,7 +19,7 @@ public class CustThread extends Thread {
                 return result.getString("id_producto");
 
             } catch (SQLException e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
             return null;
         });

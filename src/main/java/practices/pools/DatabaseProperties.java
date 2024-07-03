@@ -1,5 +1,7 @@
 package practices.pools;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum DatabaseProperties {
     DBHOST("DBHOST"), DBPORT("DBPORT"), DBNAME("DBNAME"), DBUSER("DBUSER"), DBPASS("DBPASS");
 
@@ -9,7 +11,7 @@ public enum DatabaseProperties {
         FIELD_NAME = fieldName;
     }
 
-    public String getFieldName(Databases database) {
-        return "%s_%s".formatted(database.getDatabaseName(), FIELD_NAME);
+    public String getFieldName(@NotNull DatabaseTags database) {
+        return "%s_%s".formatted(database.getFieldDatabaseTagName(), FIELD_NAME);
     }
 }

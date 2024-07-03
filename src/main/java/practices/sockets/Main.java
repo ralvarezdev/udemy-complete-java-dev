@@ -1,10 +1,13 @@
 package practices.sockets;
 
+import practices.MissingPropertyException;
+import practices.files.DefaultDataPathGetter;
+import practices.files.DefaultFileReader;
+import practices.files.DefaultFileWriter;
+import practices.files.DefaultPropertiesReader;
+
 import java.io.IOException;
 import java.util.HashMap;
-
-import practices.MissingPropertyException;
-import practices.files.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,7 +17,7 @@ public class Main {
         String PORT_FIELDNAME = "SERVER_PORT";
         String IP_FIELDNAME = "SERVER_IP";
 
-        DefaultPropertiesReader<ServerSocket> propsReader = new DefaultPropertiesReader<>(ServerSocket.class);
+        DefaultPropertiesReader propsReader = new DefaultPropertiesReader(ServerSocket.class);
         String ip = null;
         int port = 0;
 
@@ -24,7 +27,7 @@ public class Main {
             port = Integer.parseInt(portString);
 
         } catch (IOException | NumberFormatException | MissingPropertyException e) {
-            System.err.println(e);
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -37,7 +40,7 @@ public class Main {
             Thread.sleep(CLIENT_SOCKET_DELAY);
 
         } catch (InterruptedException e) {
-            System.err.println(e);
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -46,7 +49,7 @@ public class Main {
             initClientSocket(ip, port);
 
         } catch (NullPointerException | IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         serverSocket.close();
@@ -72,7 +75,7 @@ public class Main {
                     PRINT_SOCKET_MESSAGES);
 
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -95,7 +98,7 @@ public class Main {
             content = clientSocket.getFileContent(KEY);
 
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         clientSocket.close();

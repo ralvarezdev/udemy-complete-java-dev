@@ -1,55 +1,34 @@
 package practices.dbcomponent;
 
+import practices.MissingPropertyException;
+import practices.pools.DatabaseTags;
+import practices.pools.ResultSetFunction;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-
-import practices.MissingPropertyException;
-import practices.files.DefaultPropertiesReader;
-import practices.pools.Databases;
-import practices.pools.Pool;
-import practices.pools.ResultSetFunction;
 
 public class Main {
     public static void main(String[] args) {
-        String DB_PROPS_FILENAME = "pools-db.properties";
-        String POOL_PROPS_FILENAME = "pools-pool.properties";
-        boolean PRINT_POOL_MESSAGES = true;
         boolean PRINT_POOL_MANAGER_MESSAGES = true;
-        boolean PRINT_CONNECTION_MESSAGES = true;
 
-        Databases DB = Databases.POSTGRES;
-        String DB_NAME = DB.getDatabaseName();
-        String DATABASE_SENTENCES_FILENAME = "dbcomponent-mysql-sentences.properties";
+        DatabaseTags DB = DatabaseTags.POSTGRES_PRODUCTS;
+        String DB_NAME = DB.getDatabaseTagName();
 
         String SELECT_ALL = "SELECT_ALL";
         String SELECT_ALL_BYID = "SELECT_ALL_BYID";
         String INSERT = "INSERT";
 
-        DefaultPropertiesReader<Pool> poolPropsReader = new DefaultPropertiesReader<>(Pool.class);
-        DefaultPropertiesReader<DbComponent> dbComponentPropsReader = new DefaultPropertiesReader<>(DbComponent.class);
-
         // Initialize DB Component
-        DefaultDbComponent dbComponent = new DefaultDbComponent(dbComponentPropsReader, poolPropsReader, DB_PROPS_FILENAME, POOL_PROPS_FILENAME,
-                PRINT_POOL_MESSAGES, PRINT_POOL_MANAGER_MESSAGES, PRINT_CONNECTION_MESSAGES);
-
-        // Load Pool Manager, sentences and get connection
-        LinkedList<String> dbSentences;
+        DefaultDbComponent dbComponent = new DefaultDbComponent(PRINT_POOL_MANAGER_MESSAGES);
 
         try {
             dbComponent.loadPoolManager(DB);
-            dbComponent.setDefaultDatabase(DB);
             dbComponent.getConnection();
 
-            // Load sentences
-            dbSentences = new LinkedList<>(Arrays.asList(SELECT_ALL, SELECT_ALL_BYID, INSERT));
-
-            dbComponent.loadSentences(DATABASE_SENTENCES_FILENAME, dbSentences);
-
         } catch (IOException | MissingPropertyException e) {
-            System.err.println(e);
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -61,7 +40,7 @@ public class Main {
                 return new String[]{result.getString("id_producto"), result.getString("de_producto")};
 
             } catch (SQLException e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
             return null;
         };
@@ -103,11 +82,11 @@ public class Main {
                 System.out.println(Arrays.deepToString(results.getFirst()));
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         // Put connection
         dbComponent.putConnection();
-        dbComponent.disconnectAll();
+        DefaultDbComponent.disconnectAll();
     }
 }

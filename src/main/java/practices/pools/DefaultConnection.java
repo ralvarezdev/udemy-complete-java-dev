@@ -1,19 +1,14 @@
 package practices.pools;
 
+import practices.ConnectionException;
+
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import practices.ConnectionException;
-
 public final class DefaultConnection implements practices.pools.Connection {
-    private final String DRIVER;
-    private final Databases DB;
     private final String CONNECTION_NAME;
     private final DatabaseConfig DB_CONFIG;
     private final boolean AUTO_COMMIT;
@@ -22,14 +17,12 @@ public final class DefaultConnection implements practices.pools.Connection {
     private Connection connection = null;
     private PreparedStatement prepStatement = null;
 
-    public DefaultConnection(String driver, Databases database, DatabaseConfig dbConfig, boolean autoCommit,
+    public DefaultConnection(DatabaseConfig dbConfig, boolean autoCommit,
                              boolean printMessages, int attempts) throws NullPointerException, ConnectionException {
-        if (driver == null || database == null || dbConfig == null)
+        if (dbConfig == null)
             throw new NullPointerException("There are some null configurations...");
 
-        DRIVER = driver;
-        DB = database;
-        CONNECTION_NAME = "%s CONNECTION".formatted(DB.getDatabaseName());
+        CONNECTION_NAME = "%s CONNECTION".formatted(dbConfig.tag().getFieldDatabaseTagName());
         DB_CONFIG = dbConfig;
         AUTO_COMMIT = autoCommit;
         PRINT_MESSAGES = printMessages;
@@ -48,14 +41,14 @@ public final class DefaultConnection implements practices.pools.Connection {
         throw new ConnectionException("%s: Couldn't establish database connection.".formatted(CONNECTION_NAME));
     }
 
-    public DefaultConnection(String driver, Databases databases, DatabaseConfig dbConfig, boolean autoCommit,
+    public DefaultConnection(DatabaseConfig dbConfig, boolean autoCommit,
                              boolean printMessages) throws NullPointerException, ConnectionException {
-        this(driver, databases, dbConfig, autoCommit, printMessages, 3);
+        this(dbConfig, autoCommit, printMessages, 3);
     }
 
-    public DefaultConnection(String driver, Databases databases, DatabaseConfig dbConfig)
+    public DefaultConnection(DatabaseConfig dbConfig)
             throws NullPointerException, ConnectionException {
-        this(driver, databases, dbConfig, true, false);
+        this(dbConfig, true, false);
     }
 
     public synchronized boolean connect(DatabaseConfig dbConfig, boolean autoCommit) {
@@ -68,7 +61,7 @@ public final class DefaultConnection implements practices.pools.Connection {
                 disconnect();
 
             // Open connection to database
-            connection = DriverManager.getConnection(dbConfig.url(DRIVER), dbConfig.user(), dbConfig.password());
+            connection = DriverManager.getConnection(dbConfig.url(), dbConfig.user(), dbConfig.password());
             connection.setAutoCommit(autoCommit);
 
             if (PRINT_MESSAGES)
@@ -76,7 +69,7 @@ public final class DefaultConnection implements practices.pools.Connection {
 
         } catch (SQLException e) {
             setNull();
-            System.err.println(e);
+            e.printStackTrace();
 
             return false;
         }
@@ -92,7 +85,7 @@ public final class DefaultConnection implements practices.pools.Connection {
             connection.commit();
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
             return false;
         }
 
@@ -107,7 +100,7 @@ public final class DefaultConnection implements practices.pools.Connection {
             connection.rollback();
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
             return false;
         }
 
@@ -125,7 +118,7 @@ public final class DefaultConnection implements practices.pools.Connection {
                 System.out.printf("%s: Connection successfully closed...%n", CONNECTION_NAME);
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -145,7 +138,7 @@ public final class DefaultConnection implements practices.pools.Connection {
             return connection.isClosed();
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         return true;
@@ -159,7 +152,7 @@ public final class DefaultConnection implements practices.pools.Connection {
             return connection.isValid(5);
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         return false;
@@ -188,7 +181,7 @@ public final class DefaultConnection implements practices.pools.Connection {
             prepStatement = connection.prepareStatement(sql);
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -200,7 +193,7 @@ public final class DefaultConnection implements practices.pools.Connection {
             prepStatement = null;
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -257,7 +250,7 @@ public final class DefaultConnection implements practices.pools.Connection {
             return prepStatement.executeUpdate();
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         return null;
@@ -280,7 +273,7 @@ public final class DefaultConnection implements practices.pools.Connection {
             return list;
 
         } catch (SQLException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         return null;

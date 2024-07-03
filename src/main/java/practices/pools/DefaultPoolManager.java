@@ -5,20 +5,18 @@ import java.sql.SQLException;
 import java.util.List;
 
 public final class DefaultPoolManager implements PoolManager {
-    private final Databases DB;
     private final Pool POOL;
     private final String POOL_MANAGER_NAME;
     private final boolean PRINT_MESSAGES;
 
     private Connection connection;
 
-    public DefaultPoolManager(Databases database, Pool pool, boolean printMessages) throws NullPointerException {
+    public DefaultPoolManager(Pool pool, boolean printMessages) throws NullPointerException {
         if (pool == null)
             throw new NullPointerException("Pool is null.");
 
-        DB = database;
         POOL = pool;
-        POOL_MANAGER_NAME = "%s POOL MANAGER".formatted(DB.getDatabaseName());
+        POOL_MANAGER_NAME = "%s POOL MANAGER".formatted(pool.getDatabaseConfig().tag().getDatabaseTagName());
         PRINT_MESSAGES = printMessages;
     }
 

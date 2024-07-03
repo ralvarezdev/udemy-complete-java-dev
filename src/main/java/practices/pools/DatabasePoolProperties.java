@@ -1,5 +1,7 @@
 package practices.pools;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum DatabasePoolProperties {
     INIT_CONNS("INIT_CONNS"), INCR_CONNS("INCR_CONNS"), MAX_CONNS("MAX_CONNS");
 
@@ -9,7 +11,7 @@ public enum DatabasePoolProperties {
         FIELD_NAME = fieldName;
     }
 
-    public String getFieldName(Databases database) {
-        return "%s_%s".formatted(database.getDatabaseName(), FIELD_NAME);
+    public String getFieldName(@NotNull DatabaseTags tag) {
+        return "%s_%s".formatted(tag.getFieldDatabaseTagName(), FIELD_NAME);
     }
 }

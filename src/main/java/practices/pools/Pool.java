@@ -1,6 +1,8 @@
 package practices.pools;
 
 public interface Pool {
+    DatabaseConfig getDatabaseConfig();
+
     boolean increasePoolSize(int incrConns);
 
     boolean increasePoolSize();

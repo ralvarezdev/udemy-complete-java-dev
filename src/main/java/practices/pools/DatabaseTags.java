@@ -1,23 +1,40 @@
 package practices.pools;
 
+import practices.MissingPropertyException;
+import practices.files.PropertiesReader;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
 
-import practices.MissingPropertyException;
-import practices.files.PropertiesReader;
+public enum DatabaseTags {
+    POSTGRES_PRODUCTS(SqlDrivers.POSTGRES, "producto"), MYSQL_PRODUCTS(SqlDrivers.MYSQL, "producto");
 
-public enum Databases {
-    POSTGRES("POSTGRES"), MYSQL("MYSQL");
+    private final static String DB_PROPS_FILENAME = "pools-db.properties";
+    private final static String POOL_PROPS_FILENAME = "pools-pool.properties";
 
-    private final String DATABASE_NAME;
+    private final SqlDrivers DRIVER;
+    private final String DATABASE_TAG_NAME;
 
-    Databases(String databaseName) {
-        DATABASE_NAME = databaseName;
+    DatabaseTags(SqlDrivers driver, String databaseName) {
+        DRIVER = driver;
+        DATABASE_TAG_NAME = databaseName;
     }
 
-    public String getDatabaseName() {
-        return DATABASE_NAME;
+    public String getFieldDriverName() {
+        return DRIVER.getFieldDriverName();
+    }
+
+    public String getUrlDriverName() {
+        return DRIVER.getUrlDriverName();
+    }
+
+    public String getFieldDatabaseTagName() {
+        return "%s_%s".formatted(getFieldDriverName(), DATABASE_TAG_NAME.toUpperCase());
+    }
+
+    public String getDatabaseTagName() {
+        return "%s [%s]".formatted(getFieldDriverName(), DATABASE_TAG_NAME.toUpperCase());
     }
 
     private void checkProps(PropertiesReader propsReader, String propsFilename)
@@ -29,9 +46,9 @@ public enum Databases {
             throw new NullPointerException("Database properties filename is null.");
     }
 
-    public Map<String, String> getDatabaseProperties(PropertiesReader propsReader, String propsFilename)
+    public Map<String, String> getDatabaseProperties(PropertiesReader propsReader)
             throws NullPointerException, IOException, MissingPropertyException {
-        checkProps(propsReader, propsFilename);
+        checkProps(propsReader, DB_PROPS_FILENAME);
 
         DatabaseProperties[] dbPropsFields = DatabaseProperties.values();
         LinkedList<String> dbPropsFieldsName = new LinkedList<>();
@@ -39,12 +56,12 @@ public enum Databases {
         for (DatabaseProperties dbPropsField : dbPropsFields)
             dbPropsFieldsName.add(dbPropsField.getFieldName(this));
 
-        return propsReader.getProperties(propsFilename, dbPropsFieldsName);
+        return propsReader.getProperties(DB_PROPS_FILENAME, dbPropsFieldsName);
     }
 
-    public DatabaseConfig getDatabaseConfig(PropertiesReader propsReader, String propsFilename)
+    public DatabaseConfig getDatabaseConfig(PropertiesReader propsReader)
             throws NullPointerException, IOException, MissingPropertyException {
-        Map<String, String> dbProps = getDatabaseProperties(propsReader, propsFilename);
+        Map<String, String> dbProps = getDatabaseProperties(propsReader);
 
         // Get properties values
         String DBHOST = dbProps.get(DatabaseProperties.DBHOST.getFieldName(this));
@@ -53,12 +70,11 @@ public enum Databases {
         String DBUSER = dbProps.get(DatabaseProperties.DBUSER.getFieldName(this));
         String DBPASS = dbProps.get(DatabaseProperties.DBPASS.getFieldName(this));
 
-        return new DatabaseConfig(DBHOST, DBPORT, DBNAME, DBUSER, DBPASS);
+        return new DatabaseConfig(this, DBHOST, DBPORT, DBNAME, DBUSER, DBPASS);
     }
 
-    public Map<String, String> getDatabasePoolProperties(PropertiesReader propsReader, String propsFilename)
-            throws NullPointerException, IOException, MissingPropertyException {
-        checkProps(propsReader, propsFilename);
+    public Map<String, String> getDatabasePoolProperties(PropertiesReader propsReader) throws NullPointerException, IOException, MissingPropertyException {
+        checkProps(propsReader, POOL_PROPS_FILENAME);
 
         DatabasePoolProperties[] poolPropsFields = DatabasePoolProperties.values();
         LinkedList<String> poolPropsFieldsName = new LinkedList<>();
@@ -66,12 +82,12 @@ public enum Databases {
         for (DatabasePoolProperties poolPropsField : poolPropsFields)
             poolPropsFieldsName.add(poolPropsField.getFieldName(this));
 
-        return propsReader.getProperties(propsFilename, poolPropsFieldsName);
+        return propsReader.getProperties(POOL_PROPS_FILENAME, poolPropsFieldsName);
     }
 
-    public PoolConfig getDatabasePoolConfig(PropertiesReader propsReader, String propsFilename)
+    public PoolConfig getDatabasePoolConfig(PropertiesReader propsReader)
             throws NullPointerException, IOException, MissingPropertyException {
-        Map<String, String> poolProps = getDatabasePoolProperties(propsReader, propsFilename);
+        Map<String, String> poolProps = getDatabasePoolProperties(propsReader);
 
         // Get properties values
         int INIT_CONNS = Integer.parseInt(poolProps.get(DatabasePoolProperties.INIT_CONNS.getFieldName(this)));

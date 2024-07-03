@@ -1,11 +1,11 @@
 package datastructures.linkedlist;
 
+import datastructures.arraylist.Place;
+import util.Console;
+
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Scanner;
-
-import datastructures.arraylist.Place;
-import util.Console;
 
 public class LinkedListChallenge {
     private final static String INIT = "i", ADD = "a", FORWARD = "f", BACKWARD = "b", LIST = "l", QUIT = "q";

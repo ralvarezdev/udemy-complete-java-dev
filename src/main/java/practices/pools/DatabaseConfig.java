@@ -1,7 +1,8 @@
 package practices.pools;
 
-public record DatabaseConfig(String host, String port, String database, String user, String password) {
-    public String url(String driver) {
-        return "jdbc:%s://%s:%s/%s".formatted(driver, host, port, database);
+public record DatabaseConfig(DatabaseTags tag, String host, String port, String database, String user,
+                             String password) {
+    public String url() {
+        return "jdbc:%s://%s:%s/%s".formatted(tag.getUrlDriverName(), host, port, database);
     }
 }

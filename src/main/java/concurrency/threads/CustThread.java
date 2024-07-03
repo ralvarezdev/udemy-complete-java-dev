@@ -6,11 +6,11 @@ public class CustThread extends Thread {
         for (int i = 1; i <= 100; i++)
             try {
                 if (i % 2 != 0)
-                    System.out.println("Subclass Thread %-4d".formatted(i));
+                    System.out.printf("Subclass Thread %-4d%n", i);
                 Thread.sleep(100);
 
             } catch (InterruptedException e) {
-                System.err.println(e);
+                e.printStackTrace();
                 break;
             }
     }

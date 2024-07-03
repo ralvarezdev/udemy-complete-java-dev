@@ -10,8 +10,8 @@ import java.util.LinkedList;
 
 public class Main {
     public static void main(String[] args) {
-        String connectionsFilename="connections-db.properties";
-        DefaultResourcePathGetter<Database> resourcePathGetter=new DefaultResourcePathGetter<>(Database.class);
+        String connectionsFilename = "connections-db.properties";
+        DefaultResourcePathGetter resourcePathGetter = new DefaultResourcePathGetter(Database.class);
 
         Database db = new Database(resourcePathGetter, connectionsFilename);
         Connection conn = db.getConnection();
@@ -22,12 +22,12 @@ public class Main {
 
         } catch (SQLException e) {
             // Fatal error. Close given connection
-            System.err.println(e);
+            e.printStackTrace();
 
             try {
                 conn.close();
             } catch (SQLException f) {
-                System.err.println(f);
+                f.printStackTrace();
             }
             System.exit(-1);
         }
@@ -51,7 +51,7 @@ public class Main {
 
             // Execute query
             ResultSet rs = statement.executeQuery(isEmptyQuery);
-            int number = Integer.MIN_VALUE;
+            int number ;
 
             rs.next();
             number = Integer.parseInt(rs.getString("number"));
@@ -67,14 +67,14 @@ public class Main {
 
         } catch (SQLException e) {
             // Fatal error. Close given statement and connection
-            System.err.println(e);
+            e.printStackTrace();
 
             try {
                 statement.close();
                 conn.close();
 
             } catch (SQLException f) {
-                System.err.println(f);
+                f.printStackTrace();
             }
             System.exit(-1);
         }

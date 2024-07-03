@@ -12,4 +12,5 @@ module practices {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.xml.crypto;
+    requires annotations;
 }

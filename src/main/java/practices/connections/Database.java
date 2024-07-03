@@ -1,7 +1,9 @@
 package practices.connections;
 
+import practices.MissingPropertyException;
+import practices.files.ResourcePathGetter;
+
 import java.io.FileInputStream;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,9 +11,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-
-import practices.MissingPropertyException;
-import practices.files.ResourcePathGetter;
 
 class Database {
     private final static String DB_PROPS_FILENAME = "connections-db.properties";
@@ -30,7 +29,7 @@ class Database {
         if (!connected) {
             if (!loadedProps) {
                 try {
-                    String dbPropertiesPath=resourcePathGetter.getResourcePath(connectionsFilename);
+                    String dbPropertiesPath = resourcePathGetter.getResourcePath(connectionsFilename);
 
                     Properties appProps = new Properties();
                     appProps.load(new FileInputStream(dbPropertiesPath));
@@ -49,7 +48,7 @@ class Database {
                             throw new MissingPropertyException("Missing some database properties.");
 
                 } catch (Exception e) {
-                    System.err.println(e);
+                    e.printStackTrace();
                     System.exit(-1);
                 }
 
@@ -62,7 +61,7 @@ class Database {
                         DBUSER, DBPASS);
 
             } catch (SQLException e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
 
             // Next line is commented just for testing purposes of

@@ -29,10 +29,10 @@ public class ClientSocketHandler extends Thread {
             CLIENT_SOCKET.close();
 
             if (PRINT_SOCKET_MESSAGES)
-                System.out.println("%s: Client socket successfully closed...".formatted(getName()));
+                System.out.printf("%s: Client socket successfully closed...%n", getName());
 
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 }

@@ -16,7 +16,7 @@ public class Main {
             custThread.interrupt();
 
         } catch (InterruptedException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 }

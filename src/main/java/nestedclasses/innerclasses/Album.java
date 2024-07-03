@@ -1,10 +1,10 @@
 package nestedclasses.innerclasses;
 
+import datastructures.arraylist.Song;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;
-
-import datastructures.arraylist.Song;
 
 public class Album {
     @SuppressWarnings("unused")

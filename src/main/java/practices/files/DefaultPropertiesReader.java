@@ -1,5 +1,7 @@
 package practices.files;
 
+import practices.MissingPropertyException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -7,10 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import practices.MissingPropertyException;
-
-public final class DefaultPropertiesReader<T> extends DefaultResourcePathGetter<T> implements PropertiesReader {
-    public DefaultPropertiesReader(Class<T> classObject) {
+public final class DefaultPropertiesReader extends DefaultResourcePathGetter implements PropertiesReader {
+    public DefaultPropertiesReader(Class<?> classObject) {
         super(classObject);
     }
 

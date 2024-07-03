@@ -26,7 +26,7 @@ public abstract class ServerSocket {
         SOCKET_HANDLER = socketHandler;
 
         if (PRINT_SERVER_MESSAGES)
-            System.out.println("Successfully set socket handler...".formatted(NAME));
+            System.out.printf("%s: Successfully set socket handler...%n", NAME);
     }
 
     protected void start(int port) throws NullPointerException, IOException {
@@ -35,26 +35,26 @@ public abstract class ServerSocket {
         NAME = "SERVER SOCKET %d".formatted(PORT);
 
         if (PRINT_SERVER_MESSAGES)
-            System.out.println("Initializing server socket at port %d".formatted(PORT));
+            System.out.printf("Initializing server socket at port %d%n", PORT);
 
         if (SOCKET_HANDLER == null)
             throw new NullPointerException("Socket handler hasn't been set...");
 
         while (true) {
-            Socket socket = null;
+            Socket socket;
 
             try {
                 socket = SERVER_SOCKET.accept();
 
             } catch (IOException e) {
                 if (PRINT_SERVER_MESSAGES)
-                    System.out.println("%s: Server socket successfully closed...".formatted(NAME));
+                    System.out.printf("%s: Server socket successfully closed...%n", NAME);
 
                 break;
             }
 
             if (PRINT_SERVER_MESSAGES)
-                System.out.println("%s: Accepted incoming connection...".formatted(NAME));
+                System.out.printf("%s: Accepted incoming connection...%n", NAME);
 
             new ClientSocketHandler(socket, SOCKET_HANDLER, PRINT_SOCKET_MESSAGES).start();
         }
@@ -71,13 +71,13 @@ public abstract class ServerSocket {
         try {
             if (!SERVER_SOCKET.isClosed()) {
                 if (PRINT_SERVER_MESSAGES)
-                    System.out.println("%s: Closing server socket...".formatted(NAME));
+                    System.out.printf("%s: Closing server socket...%n", NAME);
 
                 SERVER_SOCKET.close();
             }
 
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 }

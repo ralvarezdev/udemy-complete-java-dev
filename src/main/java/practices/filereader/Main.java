@@ -1,14 +1,14 @@
 package practices.filereader;
 
+import practices.files.DefaultDataPathGetter;
+import practices.files.DefaultFileReader;
+import practices.files.DefaultFileWriter;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-
-import practices.files.DefaultDataPathGetter;
-import practices.files.DefaultFileReader;
-import practices.files.DefaultFileWriter;
 
 public class Main {
     public static void main(String[] args) {
@@ -32,7 +32,7 @@ public class Main {
             content = fileReader.getFileContent(dataPathGetter.getDataPath(CSV_FILENAME).toString());
 
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -56,7 +56,7 @@ public class Main {
             try {
                 id = Integer.parseInt(fields[3]);
             } catch (NumberFormatException e) {
-                System.err.println(e);
+                e.printStackTrace();
                 continue;
             }
 
@@ -177,7 +177,7 @@ public class Main {
                 }
 
             } catch (Exception e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
 
             if (menuOptionNotFound) {
@@ -203,7 +203,7 @@ public class Main {
         System.out.println();
         PersonFieldOptions.print();
 
-        while (true) {
+        do {
             System.out.println();
             System.out.print("Select sorting: ");
 
@@ -218,10 +218,7 @@ public class Main {
                 case COUNTRY -> comparator = new CountriesSorter();
                 default -> sortingOptionNotFound = true;
             }
-
-            if (!sortingOptionNotFound)
-                break;
-        }
+        } while (sortingOptionNotFound);
 
         boolean reversed = askBooleanQuestion("Do you want to sort it in reversed order?", scanner);
         peopleManager.printSorted(comparator, reversed);

@@ -1,15 +1,14 @@
 package practices.files;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
-public class DefaultResourcePathGetter<T> implements ResourcePathGetter {
-    protected final Class<T> CLASS;
+public class DefaultResourcePathGetter implements ResourcePathGetter {
+    protected final Class<?> CLASS;
 
-    public DefaultResourcePathGetter(Class<T> classObject) {
+    public DefaultResourcePathGetter(Class<?> classObject) {
         CLASS = classObject;
     }
 

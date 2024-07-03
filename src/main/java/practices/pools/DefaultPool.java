@@ -1,39 +1,38 @@
 package practices.pools;
 
-import java.util.LinkedList;
-
 import practices.ConnectionException;
 
+import java.util.LinkedList;
+
 public abstract class DefaultPool implements Pool {
-    protected final String DRIVER;
-    protected final Databases DB;
     protected final String POOL_NAME;
     protected final DatabaseConfig DB_CONFIG;
     protected final PoolConfig POOL_CONFIG;
     protected final LinkedList<Connection> CONNECTIONS;
     protected final int ATTEMPTS;
     protected final boolean AUTO_COMMIT;
-    protected final boolean PRINT_POOL_MESSAGES;
-    protected final boolean PRINT_CONNECTION_MESSAGES;
+
+    protected boolean PRINT_POOL_MESSAGES;
+    protected boolean PRINT_CONNECTION_MESSAGES;
 
     protected int currMaxSize = 0;
 
-    protected DefaultPool(String driver, Databases database, DatabaseConfig dbConfig, PoolConfig poolConfig,
+    protected DefaultPool(DatabaseConfig dbConfig, PoolConfig poolConfig,
                           boolean autoCommit, boolean printPoolMessages, boolean printConnectionMessages, int attempts)
             throws NullPointerException {
-        if (driver == null || database == null || dbConfig == null || poolConfig == null)
+        if (dbConfig == null || poolConfig == null)
             throw new NullPointerException("There are some null configurations...");
 
         // Set static attributes
-        DRIVER = driver;
-        DB = database;
-        POOL_NAME = "%s POOL".formatted(DB.getDatabaseName());
+        POOL_NAME = "%s POOL".formatted(dbConfig.tag().getDatabaseTagName());
         DB_CONFIG = dbConfig;
         POOL_CONFIG = poolConfig;
         AUTO_COMMIT = autoCommit;
+
+        ATTEMPTS = (attempts < 1) ? 5 : attempts;
+
         PRINT_POOL_MESSAGES = printPoolMessages;
         PRINT_CONNECTION_MESSAGES = printConnectionMessages;
-        ATTEMPTS = (attempts < 1) ? 5 : attempts;
 
         if (PRINT_POOL_MESSAGES)
             System.out.printf("%s: Initializing pool...%n", POOL_NAME);
@@ -43,15 +42,27 @@ public abstract class DefaultPool implements Pool {
         increasePoolSize(POOL_CONFIG.incrConns());
     }
 
-    protected DefaultPool(String driver, Databases database, DatabaseConfig dbConfig, PoolConfig poolConfig,
+    protected DefaultPool(DatabaseConfig dbConfig, PoolConfig poolConfig,
                           boolean autoCommit, boolean printPoolMessages, boolean printConnectionMessages)
             throws NullPointerException {
-        this(driver, database, dbConfig, poolConfig, autoCommit, printPoolMessages, printConnectionMessages, 5);
+        this(dbConfig, poolConfig, autoCommit, printPoolMessages, printConnectionMessages, 5);
     }
 
-    protected DefaultPool(String driver, Databases database, DatabaseConfig dbConfig, PoolConfig poolConfig)
+    protected DefaultPool(DatabaseConfig dbConfig, PoolConfig poolConfig)
             throws NullPointerException {
-        this(driver, database, dbConfig, poolConfig, true, false, false);
+        this(dbConfig, poolConfig, true, false, false);
+    }
+
+    public void setPrintPoolMessages(boolean printPoolMessages) {
+        PRINT_POOL_MESSAGES = printPoolMessages;
+    }
+
+    public void setPrintConnectionsMessages(boolean printConnectionsMessages) {
+        PRINT_CONNECTION_MESSAGES = printConnectionsMessages;
+    }
+
+    public DatabaseConfig getDatabaseConfig() {
+        return DB_CONFIG;
     }
 
     public synchronized boolean increasePoolSize(int incrConns) {
@@ -65,10 +76,10 @@ public abstract class DefaultPool implements Pool {
         for (int i = 0; i < incrConns; )
             try {
                 CONNECTIONS.add(
-                        new DefaultConnection(DRIVER, DB, DB_CONFIG, AUTO_COMMIT, PRINT_CONNECTION_MESSAGES, ATTEMPTS));
+                        new DefaultConnection(DB_CONFIG, AUTO_COMMIT, PRINT_CONNECTION_MESSAGES, ATTEMPTS));
                 i++;
             } catch (ConnectionException e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
 
         currMaxSize += incrConns;
@@ -96,7 +107,7 @@ public abstract class DefaultPool implements Pool {
                     size = getSize();
 
                 } catch (InterruptedException e) {
-                    System.err.println(e);
+                    e.printStackTrace();
                     return null;
                 }
         size = getSize();
@@ -111,11 +122,13 @@ public abstract class DefaultPool implements Pool {
 
     public synchronized void disconnectAll() {
         try {
-            while (currMaxSize != CONNECTIONS.size())
+            while (currMaxSize != CONNECTIONS.size()) {
+                System.out.println("Waiting until some connections are returned...");
                 wait();
+            }
 
         } catch (InterruptedException e) {
-            System.err.println(e);
+            e.printStackTrace();
             return;
         }
 

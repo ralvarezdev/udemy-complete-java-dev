@@ -1,10 +1,10 @@
 package datastructures.arraylist;
 
+import util.Console;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
-
-import util.Console;
 
 public class ArrayListChallenge {
     public final static int SHUTDOWN = 0, ADD = 1, REMOVE = 2;

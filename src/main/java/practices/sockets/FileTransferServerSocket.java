@@ -1,16 +1,11 @@
 package practices.sockets;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import practices.files.DefaultFileReader;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-
-import practices.files.DefaultFileReader;
 
 public class FileTransferServerSocket extends ServerSocket {
     private final Map<String, String[]> FILES_CONTENT;
@@ -63,18 +58,18 @@ public class FileTransferServerSocket extends ServerSocket {
                 streamReader = new InputStreamReader(inputStream);
                 reader = new BufferedReader(streamReader);
 
-                String inputLine, filename = null;
+                String inputLine, filename;
                 String[] fileContent = null;
                 int index = 0, lineIndex = 0;
                 FileTransferServerStatus status = FileTransferServerStatus.START_CONN;
 
                 if (PRINT_MESSAGES)
-                    System.out.println("%s: Waiting for socket messages...".formatted(NAME));
+                    System.out.printf("%s: Waiting for socket messages...%n", NAME);
 
                 while ((inputLine = reader.readLine()) != null && status != FileTransferServerStatus.END_CONN) {
 
                     if (PRINT_MESSAGES)
-                        System.out.println("%s: Received message from socket...".formatted(NAME));
+                        System.out.printf("%s: Received message from socket...%n", NAME);
 
                     FileTransferClientMessages clientResponse = FileTransferClientMessages.fromString(inputLine);
 
@@ -82,7 +77,7 @@ public class FileTransferServerSocket extends ServerSocket {
                         status = onForcedEnd();
 
                     else if (clientResponse == FileTransferClientMessages.MORE) {
-                        status = onMore(status, filename, fileContent, index, lineIndex);
+                        status = onMore(status, fileContent, index, lineIndex);
 
                         if (status == FileTransferServerStatus.ONGOING_LINE)
                             lineIndex += MAX_CHAR;
@@ -103,11 +98,12 @@ public class FileTransferServerSocket extends ServerSocket {
                 }
 
             } catch (IOException e) {
-                System.err.println(e);
+                e.printStackTrace();
+                System.exit(-1);
             }
 
             if (PRINT_SOCKET_MESSAGES)
-                System.out.println("%s: Closing socket...".formatted(NAME));
+                System.out.printf("%s: Closing socket...%n", NAME);
 
             try {
                 reader.close();
@@ -118,7 +114,7 @@ public class FileTransferServerSocket extends ServerSocket {
                 outputStream.close();
 
             } catch (IOException e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
         });
     }
@@ -139,7 +135,7 @@ public class FileTransferServerSocket extends ServerSocket {
                 super.start(port);
 
             } catch (NullPointerException | IOException e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
         };
 
@@ -166,7 +162,7 @@ public class FileTransferServerSocket extends ServerSocket {
         return FileTransferServerStatus.END_CONN;
     }
 
-    private FileTransferServerStatus onMore(FileTransferServerStatus status, String filename, String[] fileContent,
+    private FileTransferServerStatus onMore(FileTransferServerStatus status, String[] fileContent,
                                             int index, int lineIndex) {
         if (status == FileTransferServerStatus.START_CONN || status == FileTransferServerStatus.NOT_FOUND) {
             send("Filename must be set first...");

@@ -1,12 +1,6 @@
 package practices.files;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
+import java.io.*;
 
 public class DefaultFileReader implements FileReader {
 
@@ -35,7 +29,7 @@ public class DefaultFileReader implements FileReader {
             }
 
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
             return null;
         }
 

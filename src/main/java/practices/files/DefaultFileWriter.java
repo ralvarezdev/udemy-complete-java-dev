@@ -1,7 +1,7 @@
 package practices.files;
 
-import java.io.*;
 import java.io.FileWriter;
+import java.io.*;
 
 public class DefaultFileWriter implements practices.files.FileWriter {
     private boolean isContentEmpty(String content) {
@@ -33,7 +33,7 @@ public class DefaultFileWriter implements practices.files.FileWriter {
             }
 
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 }

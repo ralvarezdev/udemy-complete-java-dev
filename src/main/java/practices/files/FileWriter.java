@@ -1,6 +1,5 @@
 package practices.files;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.nio.file.Path;
 
