@@ -16,9 +16,15 @@ public interface FileReader {
         return getFileContent(resourcePath);
     }
 
-    default StringBuilder getDataFileContent(DataPathGetter dataPathGetter, String dataFilename)
+    default StringBuilder getSrcDataFileContent(DataPathGetter dataPathGetter, String dataFilename)
             throws NullPointerException, IOException {
-        Path dataPath = dataPathGetter.getDataPath(dataFilename);
+        Path dataPath = dataPathGetter.getSrcDataPath(dataFilename);
+        return getFileContent(dataPath);
+    }
+
+    default StringBuilder getTargetDataFileContent(DataPathGetter dataPathGetter, String dataFilename)
+            throws NullPointerException, IOException {
+        Path dataPath = dataPathGetter.getTargetDataPath(dataFilename);
         return getFileContent(dataPath);
     }
 }

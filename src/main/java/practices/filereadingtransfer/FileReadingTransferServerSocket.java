@@ -1,20 +1,21 @@
-package practices.sockets;
+package practices.filereadingtransfer;
 
 import practices.files.DefaultFileReader;
+import practices.sockets.BidirectionalServerSocket;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FileTransferServerSocket extends ServerSocket {
+public class FileReadingTransferServerSocket extends BidirectionalServerSocket {
     private final Map<String, String[]> FILES_CONTENT;
     private final int MAX_CHAR;
 
     private PrintWriter printWriter;
 
-    public FileTransferServerSocket(DefaultFileReader fileReader, Map<String, String> filesPath, int maxChar,
-                                    boolean printServerMessages, boolean printSocketMessages) throws NullPointerException, IOException {
+    public FileReadingTransferServerSocket(DefaultFileReader fileReader, Map<String, String> filesPath, int maxChar,
+                                           boolean printServerMessages, boolean printSocketMessages) throws NullPointerException, IOException {
         super(printServerMessages, printSocketMessages);
 
         if (filesPath == null)
@@ -52,7 +53,7 @@ public class FileTransferServerSocket extends ServerSocket {
 
             try {
                 outputStream = clientSocket.getOutputStream();
-                this.printWriter = printWriter = new PrintWriter(outputStream, true);
+                this.printWriter = new PrintWriter(outputStream, true);
 
                 inputStream = clientSocket.getInputStream();
                 streamReader = new InputStreamReader(inputStream);
@@ -61,28 +62,28 @@ public class FileTransferServerSocket extends ServerSocket {
                 String inputLine, filename;
                 String[] fileContent = null;
                 int index = 0, lineIndex = 0;
-                FileTransferServerStatus status = FileTransferServerStatus.START_CONN;
+                FileReadingTransferServerStatus status = FileReadingTransferServerStatus.START_CONN;
 
                 if (PRINT_MESSAGES)
                     System.out.printf("%s: Waiting for socket messages...%n", NAME);
 
-                while ((inputLine = reader.readLine()) != null && status != FileTransferServerStatus.END_CONN) {
+                while ((inputLine = reader.readLine()) != null && status != FileReadingTransferServerStatus.END_CONN) {
 
                     if (PRINT_MESSAGES)
                         System.out.printf("%s: Received message from socket...%n", NAME);
 
-                    FileTransferClientMessages clientResponse = FileTransferClientMessages.fromString(inputLine);
+                    FilerReadingTransferClientMessages clientResponse = FilerReadingTransferClientMessages.fromString(inputLine);
 
-                    if (clientResponse == FileTransferClientMessages.FORCED_END)
+                    if (clientResponse == FilerReadingTransferClientMessages.FORCED_END)
                         status = onForcedEnd();
 
-                    else if (clientResponse == FileTransferClientMessages.MORE) {
+                    else if (clientResponse == FilerReadingTransferClientMessages.MORE) {
                         status = onMore(status, fileContent, index, lineIndex);
 
-                        if (status == FileTransferServerStatus.ONGOING_LINE)
+                        if (status == FileReadingTransferServerStatus.ONGOING_LINE)
                             lineIndex += MAX_CHAR;
 
-                        else if (status == FileTransferServerStatus.END_LINE) {
+                        else if (status == FileReadingTransferServerStatus.END_LINE) {
                             index++;
                             lineIndex = 0;
                         }
@@ -110,7 +111,7 @@ public class FileTransferServerSocket extends ServerSocket {
                 streamReader.close();
                 inputStream.close();
 
-                printWriter.close();
+                this.printWriter.close();
                 outputStream.close();
 
             } catch (IOException e) {
@@ -119,12 +120,12 @@ public class FileTransferServerSocket extends ServerSocket {
         });
     }
 
-    public FileTransferServerSocket(DefaultFileReader fileReader, Map<String, String> filesPath, int maxChar)
+    public FileReadingTransferServerSocket(DefaultFileReader fileReader, Map<String, String> filesPath, int maxChar)
             throws NullPointerException, IOException {
         this(fileReader, filesPath, maxChar, false, false);
     }
 
-    public FileTransferServerSocket(DefaultFileReader fileReader, Map<String, String> filesPath)
+    public FileReadingTransferServerSocket(DefaultFileReader fileReader, Map<String, String> filesPath)
             throws NullPointerException, IOException {
         this(fileReader, filesPath, 128);
     }
@@ -153,37 +154,37 @@ public class FileTransferServerSocket extends ServerSocket {
         printWriter.println(message);
     }
 
-    private void send(FileTransferServerMessages f) {
+    private void send(FileReadingTransferServerMessages f) {
         send(f.getMessage());
     }
 
-    private FileTransferServerStatus onForcedEnd() {
+    private FileReadingTransferServerStatus onForcedEnd() {
         send("Closing client socket...");
-        return FileTransferServerStatus.END_CONN;
+        return FileReadingTransferServerStatus.END_CONN;
     }
 
-    private FileTransferServerStatus onMore(FileTransferServerStatus status, String[] fileContent,
-                                            int index, int lineIndex) {
-        if (status == FileTransferServerStatus.START_CONN || status == FileTransferServerStatus.NOT_FOUND) {
+    private FileReadingTransferServerStatus onMore(FileReadingTransferServerStatus status, String[] fileContent,
+                                                   int index, int lineIndex) {
+        if (status == FileReadingTransferServerStatus.START_CONN || status == FileReadingTransferServerStatus.NOT_FOUND) {
             send("Filename must be set first...");
-            return FileTransferServerStatus.NOT_FOUND;
+            return FileReadingTransferServerStatus.NOT_FOUND;
         }
 
         if (index >= fileContent.length) {
-            send(FileTransferServerMessages.END_FILE);
-            return FileTransferServerStatus.END_FILE;
+            send(FileReadingTransferServerMessages.END_FILE);
+            return FileReadingTransferServerStatus.END_FILE;
         }
 
-        if (status == FileTransferServerStatus.FOUND || status == FileTransferServerStatus.END_LINE) {
-            send(FileTransferServerMessages.START_LINE);
-            return FileTransferServerStatus.START_LINE;
+        if (status == FileReadingTransferServerStatus.FOUND || status == FileReadingTransferServerStatus.END_LINE) {
+            send(FileReadingTransferServerMessages.START_LINE);
+            return FileReadingTransferServerStatus.START_LINE;
         }
 
         String line = fileContent[index];
 
         if (lineIndex >= line.length()) {
-            send(FileTransferServerMessages.END_LINE);
-            return FileTransferServerStatus.END_LINE;
+            send(FileReadingTransferServerMessages.END_LINE);
+            return FileReadingTransferServerStatus.END_LINE;
         }
 
         int substringUpperIndex = lineIndex + MAX_CHAR;
@@ -194,16 +195,16 @@ public class FileTransferServerSocket extends ServerSocket {
         else
             send(line.substring(lineIndex));
 
-        return FileTransferServerStatus.ONGOING_LINE;
+        return FileReadingTransferServerStatus.ONGOING_LINE;
     }
 
-    private FileTransferServerStatus onFileFound() {
-        send(FileTransferServerMessages.FOUND);
-        return FileTransferServerStatus.FOUND;
+    private FileReadingTransferServerStatus onFileFound() {
+        send(FileReadingTransferServerMessages.FOUND);
+        return FileReadingTransferServerStatus.FOUND;
     }
 
-    private FileTransferServerStatus onFileNotFound() {
-        send(FileTransferServerMessages.NOT_FOUND);
-        return FileTransferServerStatus.NOT_FOUND;
+    private FileReadingTransferServerStatus onFileNotFound() {
+        send(FileReadingTransferServerMessages.NOT_FOUND);
+        return FileReadingTransferServerStatus.NOT_FOUND;
     }
 }

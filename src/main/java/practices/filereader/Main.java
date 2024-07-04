@@ -4,6 +4,8 @@ import practices.files.DefaultDataPathGetter;
 import practices.files.DefaultFileReader;
 import practices.files.DefaultFileWriter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,7 +31,13 @@ public class Main {
 
         try {
             dataPathGetter = new DefaultDataPathGetter();
-            content = fileReader.getFileContent(dataPathGetter.getDataPath(CSV_FILENAME).toString());
+
+            try {
+                content = fileReader.getFileContent(dataPathGetter.getTargetDataPath(CSV_FILENAME).toString());
+            }
+            catch(IOException|NullPointerException e){
+                content = fileReader.getFileContent(dataPathGetter.getSrcDataPath(CSV_FILENAME).toString());
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -157,7 +165,7 @@ public class Main {
 
                         // Overwrite CSV
                         content = peopleManager.getContentToWrite();
-                        fileWriter.overwriteDataFileContent(dataPathGetter, CSV_FILENAME, content.toString());
+                        fileWriter.overwriteTargetDataFileContent(dataPathGetter, CSV_FILENAME, content.toString());
                     }
                     case DELETE -> {
                         Integer personIndex = findPerson(peopleManager, scanner);
@@ -170,7 +178,7 @@ public class Main {
                     }
                     case SAVE -> {
                         content = peopleManager.getContentToWrite();
-                        fileWriter.overwriteDataFileContent(dataPathGetter, CSV_FILENAME, content.toString());
+                        fileWriter.overwriteTargetDataFileContent(dataPathGetter, CSV_FILENAME, content.toString());
                     }
                     case SHUTDOWN -> shutdown = true;
                     default -> menuOptionNotFound = true;

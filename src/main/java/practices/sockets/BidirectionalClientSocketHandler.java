@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.function.BiConsumer;
 
-public class ClientSocketHandler extends Thread {
+public class BidirectionalClientSocketHandler extends Thread {
     private final Socket CLIENT_SOCKET;
     private final BiConsumer<Socket, String> HANDLER;
     private final boolean PRINT_SOCKET_MESSAGES;
 
-    public ClientSocketHandler(Socket clientSocket, BiConsumer<Socket, String> handler, boolean printSocketMessages) {
+    public BidirectionalClientSocketHandler(Socket clientSocket, BiConsumer<Socket, String> handler, boolean printSocketMessages) {
         if (clientSocket == null)
             throw new NullPointerException("%s: Client socket is null...".formatted(getName()));
 

@@ -3,19 +3,19 @@ package practices.sockets;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientSocket {
-    private Socket clientSocket;
+public class BidirectionalClientSocket {
+    protected Socket clientSocket;
 
-    private OutputStream outputStream;
-    private PrintWriter printWriter;
+    protected OutputStream outputStream;
+    protected PrintWriter printWriter;
 
-    private InputStream inputStream;
-    private InputStreamReader streamReader;
-    private BufferedReader reader;
+    protected InputStream inputStream;
+    protected InputStreamReader streamReader;
+    protected BufferedReader reader;
 
     protected final boolean PRINT_SOCKET_MESSAGES;
 
-    public ClientSocket(boolean printSocketMessages) {
+    public BidirectionalClientSocket(boolean printSocketMessages) {
         PRINT_SOCKET_MESSAGES = printSocketMessages;
     }
 

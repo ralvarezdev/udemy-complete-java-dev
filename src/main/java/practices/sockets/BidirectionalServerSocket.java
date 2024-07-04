@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.function.BiConsumer;
 
-public abstract class ServerSocket {
+public abstract class BidirectionalServerSocket {
     protected final boolean PRINT_SERVER_MESSAGES;
     protected final boolean PRINT_SOCKET_MESSAGES;
 
@@ -13,20 +13,20 @@ public abstract class ServerSocket {
     protected int PORT;
     protected BiConsumer<Socket, String> SOCKET_HANDLER = null;
 
-    public ServerSocket(boolean printServerMessages, boolean printSocketMessages) {
+    public BidirectionalServerSocket( boolean printServerMessages, boolean printSocketMessages) {
         PRINT_SERVER_MESSAGES = printServerMessages;
         PRINT_SOCKET_MESSAGES = printSocketMessages;
     }
 
-    public ServerSocket() {
-        this(false, false);
+    public BidirectionalServerSocket() {
+        this( false, false);
     }
 
     protected void setSocketHandler(BiConsumer<Socket, String> socketHandler) {
         SOCKET_HANDLER = socketHandler;
 
         if (PRINT_SERVER_MESSAGES)
-            System.out.printf("%s: Successfully set socket handler...%n", NAME);
+            System.out.printf("SERVER SOCKET: Successfully set socket handler...%n");
     }
 
     protected void start(int port) throws NullPointerException, IOException {
@@ -56,7 +56,7 @@ public abstract class ServerSocket {
             if (PRINT_SERVER_MESSAGES)
                 System.out.printf("%s: Accepted incoming connection...%n", NAME);
 
-            new ClientSocketHandler(socket, SOCKET_HANDLER, PRINT_SOCKET_MESSAGES).start();
+            new BidirectionalClientSocketHandler(socket, SOCKET_HANDLER, PRINT_SOCKET_MESSAGES).start();
         }
     }
 

@@ -16,10 +16,17 @@ public interface FileWriter {
         writeFileContent(filePath + resourcePath, content, append);
     }
 
-    default void writeDataFileContent(DataPathGetter dataPathGetter, String dataFilename, String content, boolean append)
+    default void writeSrcDataFileContent(DataPathGetter dataPathGetter, String dataFilename, String content, boolean append)
             throws NullPointerException, IOException {
 
-        Path filePath = dataPathGetter.getDataPath(dataFilename);
+        Path filePath = dataPathGetter.getSrcDataPath(dataFilename);
+        writeFileContent(filePath.toString(), content, append);
+    }
+
+    default void writeTargetDataFileContent(DataPathGetter dataPathGetter, String dataFilename, String content, boolean append)
+            throws NullPointerException, IOException {
+
+        Path filePath = dataPathGetter.getTargetDataPath(dataFilename);
         writeFileContent(filePath.toString(), content, append);
     }
 
@@ -33,9 +40,14 @@ public interface FileWriter {
         writeResourceFileContent(resourcePathGetter, resourceFilename, content, false);
     }
 
-    default void overwriteDataFileContent(DataPathGetter dataPathGetter, String resourceFilename, String content)
+    default void overwriteSrcDataFileContent(DataPathGetter dataPathGetter, String resourceFilename, String content)
             throws NullPointerException, IOException {
-        writeDataFileContent(dataPathGetter, resourceFilename, content, false);
+        writeSrcDataFileContent(dataPathGetter, resourceFilename, content, false);
+    }
+
+    default void overwriteTargetDataFileContent(DataPathGetter dataPathGetter, String resourceFilename, String content)
+            throws NullPointerException, IOException {
+        writeTargetDataFileContent(dataPathGetter, resourceFilename, content, false);
     }
 
     default void appendFileContent(String filePath, String content)
@@ -48,8 +60,13 @@ public interface FileWriter {
         writeResourceFileContent(resourcePathGetter, resourceFilename, content, true);
     }
 
-    default void appendDataFileContent(DataPathGetter dataPathGetter, String dataFilename, String content)
+    default void appendSrcDataFileContent(DataPathGetter dataPathGetter, String dataFilename, String content)
             throws NullPointerException, IOException {
-        writeDataFileContent(dataPathGetter, dataFilename, content, true);
+        writeSrcDataFileContent(dataPathGetter, dataFilename, content, true);
+    }
+
+    default void appendTargetDataFileContent(DataPathGetter dataPathGetter, String dataFilename, String content)
+            throws NullPointerException, IOException {
+        writeTargetDataFileContent(dataPathGetter, dataFilename, content, true);
     }
 }

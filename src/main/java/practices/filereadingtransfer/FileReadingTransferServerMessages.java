@@ -1,11 +1,11 @@
-package practices.sockets;
+package practices.filereadingtransfer;
 
-public enum FileTransferServerMessages {
+public enum FileReadingTransferServerMessages {
     FOUND("!"), NOT_FOUND("?"), START_LINE("{"), END_LINE("}"), END_FILE("."), UNDEFINED("0");
 
     private final String message;
 
-    private FileTransferServerMessages(String message) {
+    FileReadingTransferServerMessages(String message) {
         this.message = message;
     }
 
@@ -13,11 +13,11 @@ public enum FileTransferServerMessages {
         return message;
     }
 
-    public static FileTransferServerMessages fromString(String message) {
+    public static FileReadingTransferServerMessages fromString(String message) {
         if (message == null)
             return UNDEFINED;
 
-        for (FileTransferServerMessages f : FileTransferServerMessages.values())
+        for (FileReadingTransferServerMessages f : FileReadingTransferServerMessages.values())
             if (f.getMessage().equalsIgnoreCase(message))
                 return f;
 

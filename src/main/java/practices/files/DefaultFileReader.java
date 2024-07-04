@@ -9,7 +9,7 @@ public class DefaultFileReader implements FileReader {
             throw new NullPointerException("File path is null.");
     }
 
-    public StringBuilder getFileContent(String filePath) throws NullPointerException {
+    public StringBuilder getFileContent(String filePath) throws NullPointerException, IOException {
         StringBuilder content = new StringBuilder();
 
         checkFilePath(filePath);
@@ -28,9 +28,6 @@ public class DefaultFileReader implements FileReader {
                 }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
         }
 
         return content;

@@ -7,7 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class DefaultDataPathGetter implements DataPathGetter {
-    private final Path DATA_PATH;
+    private final Path SRC_DATA_PATH;
+    private final Path TARGET_DATA_PATH;
 
     public DefaultDataPathGetter() throws IOException {
         DefaultResourcePathGetter resourcePathGetter = new DefaultResourcePathGetter(DefaultDataPathGetter.class);
@@ -16,7 +17,9 @@ public class DefaultDataPathGetter implements DataPathGetter {
         Path CURR_PATH = Path.of((OS.getOS() == OS.Windows) ? resourcePath.substring(3) : resourcePath);
 
         Path ROOT_PATH = CURR_PATH.getParent().getParent().getParent().getParent();
-        DATA_PATH = Paths.get(ROOT_PATH.toString(), "data");
+        Path DATA_PATH = Paths.get(ROOT_PATH.toString(), "data");
+        SRC_DATA_PATH=Paths.get(DATA_PATH.toString(), "src");
+        TARGET_DATA_PATH=Paths.get(DATA_PATH.toString(), "target");
     }
 
     public void checkDataFilename(String dataFilename) throws NullPointerException {
@@ -24,9 +27,23 @@ public class DefaultDataPathGetter implements DataPathGetter {
             throw new NullPointerException("Data filename is null.");
     }
 
-    public Path getDataPath(String dataFilename) throws NullPointerException {
+    public Path getSrcDataPath(String dataFilename) throws NullPointerException {
         checkDataFilename(dataFilename);
 
-        return Paths.get(DATA_PATH.toString(), dataFilename);
+        return Paths.get(SRC_DATA_PATH.toString(), dataFilename);
+    }
+
+    public Path getTargetDataPath(String dataFilename) throws NullPointerException {
+        checkDataFilename(dataFilename);
+
+        return Paths.get(TARGET_DATA_PATH.toString(), dataFilename);
+    }
+
+    public Path getSrcDataPath() throws NullPointerException {
+        return Paths.get(SRC_DATA_PATH.toString());
+    }
+
+    public Path getTargetDataPath() throws NullPointerException {
+        return Paths.get(TARGET_DATA_PATH.toString());
     }
 }

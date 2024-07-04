@@ -1,24 +1,26 @@
-package practices.sockets;
+package practices.filereadingtransfer;
 
-public class FileTransferClientSocket extends ClientSocket {
-    public FileTransferClientSocket(boolean printSocketMessages) {
+import practices.sockets.BidirectionalClientSocket;
+
+public class FileReadingTransferClientSocket extends BidirectionalClientSocket {
+    public FileReadingTransferClientSocket(boolean printSocketMessages) {
         super(printSocketMessages);
     }
 
-    private String send(FileTransferClientMessages f) {
+    private String send(FilerReadingTransferClientMessages f) {
         return send(f.getMessage());
     }
 
     public String getFileContent(String filename) {
         String serverResponseString = send(filename);
-        FileTransferServerMessages serverResponse = FileTransferServerMessages.fromString(serverResponseString);
+        FileReadingTransferServerMessages serverResponse = FileReadingTransferServerMessages.fromString(serverResponseString);
 
-        if (serverResponse == FileTransferServerMessages.NOT_FOUND) {
-            System.out.println("File '%s' not found on server...".formatted(filename));
+        if (serverResponse == FileReadingTransferServerMessages.NOT_FOUND) {
+            System.out.printf("File '%s' not found on server...%n", filename);
             return null;
         }
 
-        if (serverResponse != FileTransferServerMessages.FOUND) {
+        if (serverResponse != FileReadingTransferServerMessages.FOUND) {
             System.out.println("Unregistered response from server...");
             return null;
         }
@@ -28,29 +30,31 @@ public class FileTransferClientSocket extends ClientSocket {
 
         while (true) {
 
-            serverResponseString = send(FileTransferClientMessages.MORE);
-            serverResponse = FileTransferServerMessages.fromString(serverResponseString);
+            serverResponseString = send(FilerReadingTransferClientMessages.MORE);
+            serverResponse = FileReadingTransferServerMessages.fromString(serverResponseString);
 
-            if (serverResponse == FileTransferServerMessages.END_FILE) {
+            if (serverResponse == FileReadingTransferServerMessages.END_FILE) {
                 if (PRINT_SOCKET_MESSAGES)
                     System.out.println("File content successfully read from server...");
                 break;
             }
 
-            if (serverResponse == FileTransferServerMessages.START_LINE) {
+            if (serverResponse == FileReadingTransferServerMessages.START_LINE) {
                 line = new StringBuilder();
 
                 if (PRINT_SOCKET_MESSAGES) {
                     // System.out.println();
                     System.out.println("Getting line from server...");
                 }
-            } else if (serverResponse != FileTransferServerMessages.END_LINE) {
+            } else if (serverResponse != FileReadingTransferServerMessages.END_LINE) {
+                assert line != null;
                 line.append(serverResponseString);
 
                 /*
                  * if (PRINT_SOCKET_MESSAGES) System.out.println(serverResponseString);
                  */
             } else {
+                assert line != null;
                 line.append("\n");
                 content.append(line);
             }

@@ -1,10 +1,13 @@
-package practices.sockets;
+package practices.filereadingtransfer;
 
 import practices.MissingPropertyException;
+import practices.filereadingtransfer.FileReadingTransferClientSocket;
+import practices.filereadingtransfer.FileReadingTransferServerSocket;
 import practices.files.DefaultDataPathGetter;
 import practices.files.DefaultFileReader;
 import practices.files.DefaultFileWriter;
 import practices.files.DefaultPropertiesReader;
+import practices.sockets.BidirectionalServerSocket;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,7 +20,7 @@ public class Main {
         String PORT_FIELDNAME = "SERVER_PORT";
         String IP_FIELDNAME = "SERVER_IP";
 
-        DefaultPropertiesReader propsReader = new DefaultPropertiesReader(ServerSocket.class);
+        DefaultPropertiesReader propsReader = new DefaultPropertiesReader(BidirectionalServerSocket.class);
         String ip = null;
         int port = 0;
 
@@ -32,7 +35,7 @@ public class Main {
         }
 
         // Initialize server socket
-        FileTransferServerSocket serverSocket = getServerSocket();
+        FileReadingTransferServerSocket serverSocket = getServerSocket();
         serverSocket.startThread(port);
 
         // Wait n milliseconds to start client socket
@@ -55,23 +58,23 @@ public class Main {
         serverSocket.close();
     }
 
-    public static FileTransferServerSocket getServerSocket() {
+    public static FileReadingTransferServerSocket getServerSocket() {
         String PEOPLE_CSV_FILENAME = "people.csv";
         int MAX_CHAR = 128;
 
         boolean PRINT_SERVER_MESSAGES = true;
         boolean PRINT_SOCKET_MESSAGES = false;
 
-        FileTransferServerSocket serverSocket = null;
+        FileReadingTransferServerSocket serverSocket = null;
 
         try {
             HashMap<String, String> FILES_PATH = new HashMap<>();
             DefaultFileReader fileReader = new DefaultFileReader();
             DefaultDataPathGetter dataPathGetter = new DefaultDataPathGetter();
 
-            FILES_PATH.put("people", dataPathGetter.getDataPath(PEOPLE_CSV_FILENAME).toString());
+            FILES_PATH.put("people", dataPathGetter.getSrcDataPath(PEOPLE_CSV_FILENAME).toString());
 
-            serverSocket = new FileTransferServerSocket(fileReader, FILES_PATH, MAX_CHAR, PRINT_SERVER_MESSAGES,
+            serverSocket = new FileReadingTransferServerSocket(fileReader, FILES_PATH, MAX_CHAR, PRINT_SERVER_MESSAGES,
                     PRINT_SOCKET_MESSAGES);
 
         } catch (IOException e) {
@@ -84,16 +87,16 @@ public class Main {
 
     public static void initClientSocket(String ip, int port) throws NullPointerException, IOException {
         String KEY = "people";
-        String READ_CSV_FILENAME = "read-people.csv";
+        String READ_CSV_FILENAME = "file-reading-transfer-people.csv";
 
         boolean PRINT_SOCKET_MESSAGES = true;
 
-        FileTransferClientSocket clientSocket = null;
+        FileReadingTransferClientSocket clientSocket = null;
         String content = null;
 
         // Get file content
         try {
-            clientSocket = new FileTransferClientSocket(PRINT_SOCKET_MESSAGES);
+            clientSocket = new FileReadingTransferClientSocket(PRINT_SOCKET_MESSAGES);
             clientSocket.start(ip, port);
             content = clientSocket.getFileContent(KEY);
 
@@ -106,6 +109,6 @@ public class Main {
         // Write file content
         DefaultFileWriter fileWriter = new DefaultFileWriter();
         DefaultDataPathGetter dataPathGetter = new DefaultDataPathGetter();
-        fileWriter.overwriteDataFileContent(dataPathGetter, READ_CSV_FILENAME, content);
+        fileWriter.overwriteTargetDataFileContent(dataPathGetter, READ_CSV_FILENAME, content);
     }
 }

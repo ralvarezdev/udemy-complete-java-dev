@@ -61,14 +61,17 @@ public class Main {
             }
             System.out.println();
 
-            /*
-             * // Insert sentence dbComponent.createPreparedStatement(INSERT);
-             * dbComponent.setStringParameter(1, "Inserted from DB Component");
-             * dbComponent.executeUpdate(); dbComponent.closePreparedStatement(DB);
-             *
-             * System.out.println("- Inserting to %s".formatted(DB_NAME));
-             * System.out.println(); lastID++;
-             */
+/*
+              // Insert sentence
+                dbComponent.createPreparedStatement(INSERT);
+              dbComponent.setStringParameter(1, "Inserted from DB Component");
+              dbComponent.executeUpdate(); dbComponent.closePreparedStatement(DB);
+
+              System.out.printf("- Inserting to %s%n", DB_NAME);
+              System.out.println(); lastID++;
+
+ */
+
 
             // Select all by ID sentence
             dbComponent.createPreparedStatement(SELECT_ALL_BYID);
