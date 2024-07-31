@@ -7,11 +7,11 @@ public interface FileWriter {
     void writeFileContent(String filePath, String content, boolean append)
             throws NullPointerException, IOException;
 
-    default void writeResourceFileContent(ResourcePathGetter resourcePathGetter, String resourceFilename, String content, boolean append)
+    default void writeResourceFileContent(ResourceGetter resourceGetter, String resourceFilename, String content, boolean append)
             throws NullPointerException, IOException {
 
-        String filePath = resourcePathGetter.getResourcePath("");
-        String resourcePath = resourcePathGetter.getResourcePath(resourceFilename);
+        String filePath = resourceGetter.getResourcePath("");
+        String resourcePath = resourceGetter.getResourcePath(resourceFilename);
 
         writeFileContent(filePath + resourcePath, content, append);
     }
@@ -35,9 +35,9 @@ public interface FileWriter {
         writeFileContent(filePath, content, false);
     }
 
-    default void overwriteResourceFileContent(ResourcePathGetter resourcePathGetter, String resourceFilename, String content)
+    default void overwriteResourceFileContent(ResourceGetter resourceGetter, String resourceFilename, String content)
             throws NullPointerException, IOException {
-        writeResourceFileContent(resourcePathGetter, resourceFilename, content, false);
+        writeResourceFileContent(resourceGetter, resourceFilename, content, false);
     }
 
     default void overwriteSrcDataFileContent(DataPathGetter dataPathGetter, String resourceFilename, String content)
@@ -55,9 +55,9 @@ public interface FileWriter {
         writeFileContent(filePath, content, true);
     }
 
-    default void appendResourceFileContent(ResourcePathGetter resourcePathGetter, String resourceFilename, String content)
+    default void appendResourceFileContent(ResourceGetter resourceGetter, String resourceFilename, String content)
             throws NullPointerException, IOException {
-        writeResourceFileContent(resourcePathGetter, resourceFilename, content, true);
+        writeResourceFileContent(resourceGetter, resourceFilename, content, true);
     }
 
     default void appendSrcDataFileContent(DataPathGetter dataPathGetter, String dataFilename, String content)

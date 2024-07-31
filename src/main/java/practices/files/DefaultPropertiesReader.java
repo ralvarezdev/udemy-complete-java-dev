@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public final class DefaultPropertiesReader extends DefaultResourcePathGetter implements PropertiesReader {
+public final class DefaultPropertiesReader extends DefaultResourceGetter implements PropertiesReader {
     public DefaultPropertiesReader(Class<?> classObject) {
         super(classObject);
     }

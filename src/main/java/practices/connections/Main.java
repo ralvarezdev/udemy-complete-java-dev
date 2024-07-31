@@ -1,6 +1,6 @@
 package practices.connections;
 
-import practices.files.DefaultResourcePathGetter;
+import practices.files.DefaultResourceGetter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,7 +11,7 @@ import java.util.LinkedList;
 public class Main {
     public static void main(String[] args) {
         String connectionsFilename = "connections-db.properties";
-        DefaultResourcePathGetter resourcePathGetter = new DefaultResourcePathGetter(Database.class);
+        DefaultResourceGetter resourcePathGetter = new DefaultResourceGetter(Database.class);
 
         Database db = new Database(resourcePathGetter, connectionsFilename);
         Connection conn = db.getConnection();
@@ -51,7 +51,7 @@ public class Main {
 
             // Execute query
             ResultSet rs = statement.executeQuery(isEmptyQuery);
-            int number ;
+            int number;
 
             rs.next();
             number = Integer.parseInt(rs.getString("number"));

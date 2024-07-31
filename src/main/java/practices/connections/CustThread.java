@@ -1,23 +1,23 @@
 package practices.connections;
 
-import practices.files.ResourcePathGetter;
+import practices.files.ResourceGetter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class CustThread extends Thread {
-    private final ResourcePathGetter resourcePathGetter;
+    private final ResourceGetter resourceGetter;
     private final String resourceFilename;
 
-    public CustThread(ResourcePathGetter resourcePathGetter, String resourceFilename) {
-        this.resourcePathGetter = resourcePathGetter;
+    public CustThread(ResourceGetter resourceGetter, String resourceFilename) {
+        this.resourceGetter = resourceGetter;
         this.resourceFilename = resourceFilename;
     }
 
     @Override
     public void run() {
-        Database db = new Database(resourcePathGetter, resourceFilename);
+        Database db = new Database(resourceGetter, resourceFilename);
         Connection conn = db.getConnection();
         Statement statement;
 

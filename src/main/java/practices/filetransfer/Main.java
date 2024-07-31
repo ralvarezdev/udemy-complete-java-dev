@@ -1,17 +1,11 @@
 package practices.filetransfer;
 
 import practices.MissingPropertyException;
-import practices.filereadingtransfer.FileReadingTransferClientSocket;
-import practices.filereadingtransfer.FileReadingTransferServerSocket;
 import practices.files.DefaultDataPathGetter;
-import practices.files.DefaultFileReader;
-import practices.files.DefaultFileWriter;
 import practices.files.DefaultPropertiesReader;
 import practices.sockets.BidirectionalServerSocket;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.HashMap;
 
 public class Main {
     private static FileTransferClientSocketBuffers BUFFER_SIZE;
@@ -37,18 +31,18 @@ public class Main {
             System.exit(-1);
         }
 
-        BUFFER_SIZE=FileTransferClientSocketBuffers.MEDIUM;
-        FileTransferServerSocket serverSocket =null;
+        BUFFER_SIZE = FileTransferClientSocketBuffers.MEDIUM;
+        FileTransferServerSocket serverSocket = null;
 
         try {
-        // Initialize server socket
-        serverSocket = getServerSocket();
-        serverSocket.startThread(port);
+            // Initialize server socket
+            serverSocket = getServerSocket();
+            serverSocket.startThread(port);
 
-        // Wait n milliseconds to start client socket
+            // Wait n milliseconds to start client socket
             Thread.sleep(CLIENT_SOCKET_DELAY);
 
-        } catch (InterruptedException|IOException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
             System.exit(-1);
         }
@@ -71,7 +65,7 @@ public class Main {
         DefaultDataPathGetter dataPathGetter = new DefaultDataPathGetter();
         String rootPath = dataPathGetter.getTargetDataPath().toString();
 
-        return new FileTransferServerSocket(rootPath,BUFFER_SIZE,PRINT_SERVER_MESSAGES,PRINT_SOCKET_MESSAGES);
+        return new FileTransferServerSocket(rootPath, BUFFER_SIZE, PRINT_SERVER_MESSAGES, PRINT_SOCKET_MESSAGES);
     }
 
     public static void initClientSocket(String ip, int port) throws NullPointerException, IOException {
@@ -84,7 +78,7 @@ public class Main {
         // Get file content
         try {
             clientSocket = new FileTransferClientSocket(PRINT_SOCKET_MESSAGES);
-            DefaultDataPathGetter dataPathGetter=new DefaultDataPathGetter();
+            DefaultDataPathGetter dataPathGetter = new DefaultDataPathGetter();
             String rootPath = dataPathGetter.getSrcDataPath().toString();
 
             clientSocket.start(ip, port);

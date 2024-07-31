@@ -1,8 +1,6 @@
 package practices.filereadingtransfer;
 
 import practices.MissingPropertyException;
-import practices.filereadingtransfer.FileReadingTransferClientSocket;
-import practices.filereadingtransfer.FileReadingTransferServerSocket;
 import practices.files.DefaultDataPathGetter;
 import practices.files.DefaultFileReader;
 import practices.files.DefaultFileWriter;

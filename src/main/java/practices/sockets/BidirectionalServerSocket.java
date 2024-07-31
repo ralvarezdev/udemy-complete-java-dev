@@ -13,13 +13,13 @@ public abstract class BidirectionalServerSocket {
     protected int PORT;
     protected BiConsumer<Socket, String> SOCKET_HANDLER = null;
 
-    public BidirectionalServerSocket( boolean printServerMessages, boolean printSocketMessages) {
+    public BidirectionalServerSocket(boolean printServerMessages, boolean printSocketMessages) {
         PRINT_SERVER_MESSAGES = printServerMessages;
         PRINT_SOCKET_MESSAGES = printSocketMessages;
     }
 
     public BidirectionalServerSocket() {
-        this( false, false);
+        this(false, false);
     }
 
     protected void setSocketHandler(BiConsumer<Socket, String> socketHandler) {

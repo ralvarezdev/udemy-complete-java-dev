@@ -17,7 +17,7 @@ public enum FileTransferClientSocketMessages {
         if (message == null)
             return UNDEFINED;
 
-        for (FileTransferClientSocketMessages f :FileTransferClientSocketMessages.values())
+        for (FileTransferClientSocketMessages f : FileTransferClientSocketMessages.values())
             if (f.getMessage().equalsIgnoreCase(message))
                 return f;
 

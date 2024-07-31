@@ -4,8 +4,6 @@ import practices.files.DefaultDataPathGetter;
 import practices.files.DefaultFileReader;
 import practices.files.DefaultFileWriter;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,8 +32,7 @@ public class Main {
 
             try {
                 content = fileReader.getFileContent(dataPathGetter.getTargetDataPath(CSV_FILENAME).toString());
-            }
-            catch(IOException|NullPointerException e){
+            } catch (IOException | NullPointerException e) {
                 content = fileReader.getFileContent(dataPathGetter.getSrcDataPath(CSV_FILENAME).toString());
             }
 

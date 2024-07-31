@@ -11,15 +11,15 @@ public class DefaultDataPathGetter implements DataPathGetter {
     private final Path TARGET_DATA_PATH;
 
     public DefaultDataPathGetter() throws IOException {
-        DefaultResourcePathGetter resourcePathGetter = new DefaultResourcePathGetter(DefaultDataPathGetter.class);
+        DefaultResourceGetter resourcePathGetter = new DefaultResourceGetter(DefaultDataPathGetter.class);
 
         String resourcePath = resourcePathGetter.getResourcePath("");
         Path CURR_PATH = Path.of((OS.getOS() == OS.Windows) ? resourcePath.substring(3) : resourcePath);
 
         Path ROOT_PATH = CURR_PATH.getParent().getParent().getParent().getParent();
         Path DATA_PATH = Paths.get(ROOT_PATH.toString(), "data");
-        SRC_DATA_PATH=Paths.get(DATA_PATH.toString(), "src");
-        TARGET_DATA_PATH=Paths.get(DATA_PATH.toString(), "target");
+        SRC_DATA_PATH = Paths.get(DATA_PATH.toString(), "src");
+        TARGET_DATA_PATH = Paths.get(DATA_PATH.toString(), "target");
     }
 
     public void checkDataFilename(String dataFilename) throws NullPointerException {

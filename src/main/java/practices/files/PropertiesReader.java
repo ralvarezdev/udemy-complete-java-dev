@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public interface PropertiesReader extends ResourcePathGetter {
+public interface PropertiesReader extends ResourceGetter {
     String getProperty(Properties props, String fieldName) throws NullPointerException, MissingPropertyException;
 
     String getProperty(String resourceFilename, String fieldName)

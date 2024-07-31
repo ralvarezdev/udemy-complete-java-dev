@@ -10,9 +10,9 @@ public interface FileReader {
         return getFileContent(filePath.toString());
     }
 
-    default StringBuilder getResourceFileContent(ResourcePathGetter resourcePathGetter, String resourceFilename)
+    default StringBuilder getResourceFileContent(ResourceGetter resourceGetter, String resourceFilename)
             throws NullPointerException, IOException {
-        String resourcePath = resourcePathGetter.getResourcePath(resourceFilename);
+        String resourcePath = resourceGetter.getResourcePath(resourceFilename);
         return getFileContent(resourcePath);
     }
 

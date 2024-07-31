@@ -1,7 +1,7 @@
 package practices.filetransfer;
 
 public enum FileTransferClientSocketBuffers {
-    MEDIUM(4*1024);
+    MEDIUM(4 * 1024);
 
     private final int size;
 

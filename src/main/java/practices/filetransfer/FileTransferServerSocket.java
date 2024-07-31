@@ -1,6 +1,5 @@
 package practices.filetransfer;
 
-import practices.filereadingtransfer.FileReadingTransferServerStatus;
 import practices.sockets.BidirectionalServerSocket;
 
 import java.io.*;
@@ -11,7 +10,7 @@ import java.util.Random;
 public class FileTransferServerSocket extends BidirectionalServerSocket {
     private final String ROOT_PATH;
 
-    public FileTransferServerSocket(String rootPath,FileTransferClientSocketBuffers bufferSize, boolean printServerMessages, boolean printSocketMessages) throws NullPointerException {
+    public FileTransferServerSocket(String rootPath, FileTransferClientSocketBuffers bufferSize, boolean printServerMessages, boolean printSocketMessages) throws NullPointerException {
         super(printServerMessages, printSocketMessages);
         ROOT_PATH = rootPath;
 
@@ -44,7 +43,7 @@ public class FileTransferServerSocket extends BidirectionalServerSocket {
                 if (PRINT_MESSAGES)
                     System.out.printf("%s: Waiting for socket messages...%n", NAME);
 
-                while ((line= reader.readLine())!=null&& !line.equals(FileTransferClientSocketMessages.END.toString())) {
+                while ((line = reader.readLine()) != null && !line.equals(FileTransferClientSocketMessages.END.toString())) {
                     String baseFilename = reader.readLine();
                     String fullFilename = String.format("%d-%s", System.currentTimeMillis(), baseFilename);
                     File filePath = new File(Path.of(ROOT_PATH, fullFilename).toString());
@@ -87,7 +86,7 @@ public class FileTransferServerSocket extends BidirectionalServerSocket {
 
     public FileTransferServerSocket(String rootPath, FileTransferClientSocketBuffers bufferSize)
             throws NullPointerException {
-        this(rootPath, bufferSize,false, false);
+        this(rootPath, bufferSize, false, false);
     }
 
     public Thread startThread(int port) {

@@ -1,7 +1,7 @@
 package practices.connections;
 
 import practices.MissingPropertyException;
-import practices.files.ResourcePathGetter;
+import practices.files.ResourceGetter;
 
 import java.io.FileInputStream;
 import java.sql.Connection;
@@ -25,11 +25,11 @@ class Database {
     private static boolean connected = false;
     private static Connection connection = null;
 
-    public Database(ResourcePathGetter resourcePathGetter, String connectionsFilename) {
+    public Database(ResourceGetter resourceGetter, String connectionsFilename) {
         if (!connected) {
             if (!loadedProps) {
                 try {
-                    String dbPropertiesPath = resourcePathGetter.getResourcePath(connectionsFilename);
+                    String dbPropertiesPath = resourceGetter.getResourcePath(connectionsFilename);
 
                     Properties appProps = new Properties();
                     appProps.load(new FileInputStream(dbPropertiesPath));

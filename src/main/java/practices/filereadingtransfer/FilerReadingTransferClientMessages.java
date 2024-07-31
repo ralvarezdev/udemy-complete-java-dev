@@ -1,15 +1,5 @@
 package practices.filereadingtransfer;
 
-import practices.MissingPropertyException;
-import practices.files.DefaultDataPathGetter;
-import practices.files.DefaultFileReader;
-import practices.files.DefaultFileWriter;
-import practices.files.DefaultPropertiesReader;
-import practices.sockets.BidirectionalServerSocket;
-
-import java.io.IOException;
-import java.util.HashMap;
-
 public enum FilerReadingTransferClientMessages {
     MORE("+"), FORCED_END("."), UNDEFINED("0");
 
