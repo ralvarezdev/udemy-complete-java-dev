@@ -1,4 +1,4 @@
-package practices.traversinggame.commons.styles;
+package practices.gui.traversinggame.commons.styles;
 
 public class Styles {
     // Styles

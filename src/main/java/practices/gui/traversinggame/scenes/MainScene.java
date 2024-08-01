@@ -1,4 +1,4 @@
-package practices.traversinggame.scenes;
+package practices.gui.traversinggame.scenes;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -14,21 +14,22 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import practices.files.ResourceGetter;
-import practices.traversinggame.commons.Colors;
-import practices.traversinggame.commons.CommonNodes;
-import practices.traversinggame.commons.Sizes;
-import practices.traversinggame.commons.Texts;
-import practices.traversinggame.commons.assets.Assets;
-import practices.traversinggame.setters.LayoutSetter;
-import practices.traversinggame.setters.NodeSetter;
-import practices.traversinggame.setters.SceneSetter;
-import practices.traversinggame.setters.StageSetter;
+import practices.gui.traversinggame.commons.Colors;
+import practices.gui.setters.CommonNodes;
+import practices.gui.traversinggame.commons.Sizes;
+import practices.gui.traversinggame.commons.Texts;
+import practices.gui.traversinggame.commons.assets.Assets;
+import practices.gui.setters.LayoutSetter;
+import practices.gui.setters.NodeSetter;
+import practices.gui.traversinggame.setters.SceneSetter;
+import practices.gui.setters.StageSetter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-public class MainScene {
+public final class MainScene {
     // Main image
     private final static int MAIN_IMAGE_HEIGHT = 200;
 
@@ -43,7 +44,8 @@ public class MainScene {
 
                 // Set matrix stage title and icon
                 matrixStage.setTitle(matrixType.name);
-                StageSetter.setWindowIcon(assetsResourceGetter, matrixStage);
+                InputStream icon = assetsResourceGetter.getResourceAsStream(Assets.Image.WIN);
+                StageSetter.setWindowIcon(matrixStage, icon);
 
                 // Set matrix scene
                 Scene matrixScene = matrixType.getScene(assetsResourceGetter, stylesResourceGetter);
@@ -123,7 +125,7 @@ public class MainScene {
         borderPane.setCenter(centerVBox);
         borderPane.setBottom(bottomHBox);
 
-        LayoutSetter.setBgColor(borderPane);
+        LayoutSetter.setBgColor(borderPane, Colors.Dark.STAGE_BG);
 
         // Scene
         Scene scene = new Scene(borderPane);

@@ -1,4 +1,4 @@
-package practices.traversinggame.commons;
+package practices.gui.traversinggame.commons;
 
 public final class Sizes {
     // Stage sizes

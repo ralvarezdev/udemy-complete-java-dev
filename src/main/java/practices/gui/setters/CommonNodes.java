@@ -1,10 +1,14 @@
-package practices.traversinggame.commons;
+package practices.gui.setters;
 
 import javafx.geometry.Insets;
 
-public class CommonNodes {
+public final class CommonNodes {
     public static Insets getInset(int top, int right, int bottom, int left) {
         return new Insets(top, right, bottom, left);
+    }
+
+    public static Insets getInset(int vertical, int horizontal) {
+        return new Insets(vertical, horizontal, vertical, horizontal);
     }
 
     public static Insets getInset(int spacing) {

@@ -1,6 +1,6 @@
-package practices.traversinggame.commons.assets;
+package practices.gui.traversinggame.commons.assets;
 
-public class Assets {
+public final class Assets {
     // Assets
     public final static class Image {
         public final static String MAIN = "dinosaur003.png";

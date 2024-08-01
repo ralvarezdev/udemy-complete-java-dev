@@ -1,17 +1,14 @@
-package practices.traversinggame.setters;
+package practices.gui.setters;
 
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import practices.files.ResourceGetter;
-import practices.traversinggame.commons.assets.Assets;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class StageSetter {
-    public static void setWindowIcon(ResourceGetter assetsResourceGetter, Stage stage) throws IOException {
-        InputStream icon = assetsResourceGetter.getResourceAsStream(Assets.Image.WIN);
+public final class StageSetter {
+    public static void setWindowIcon(Stage stage, InputStream icon) throws IOException {
         stage.getIcons().add(new Image(icon));
     }
 

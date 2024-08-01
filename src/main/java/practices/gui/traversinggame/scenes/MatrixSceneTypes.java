@@ -1,4 +1,4 @@
-package practices.traversinggame.scenes;
+package practices.gui.traversinggame.scenes;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,11 +9,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import practices.files.ResourceGetter;
-import practices.traversinggame.commons.*;
-import practices.traversinggame.commons.assets.Assets;
-import practices.traversinggame.setters.LayoutSetter;
-import practices.traversinggame.setters.NodeSetter;
-import practices.traversinggame.setters.SceneSetter;
+import practices.gui.setters.CommonNodes;
+import practices.gui.traversinggame.commons.*;
+import practices.gui.traversinggame.commons.assets.Assets;
+import practices.gui.setters.LayoutSetter;
+import practices.gui.traversinggame.setters.SceneSetter;
+import practices.gui.setters.NodeSetter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -160,7 +161,7 @@ public enum MatrixSceneTypes {
         StackPane stackPane = new StackPane(gridPane, playerImageView);
         stackPane.setMinSize(minWidth, minHeight);
 
-        LayoutSetter.setBgColor(stackPane);
+        LayoutSetter.setBgColor(stackPane, Colors.Dark.STAGE_BG);
 
         // Glasses cell
         glassesCoords = getMatrixQuarterCornerCell(Coords.Quarter.INITIAL_GLASSES);

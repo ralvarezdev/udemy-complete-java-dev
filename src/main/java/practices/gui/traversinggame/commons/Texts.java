@@ -1,6 +1,6 @@
-package practices.traversinggame.commons;
+package practices.gui.traversinggame.commons;
 
-public class Texts {
+public final class Texts {
     // Texts
     public final static String TITLE = "TRAVERSING GAME";
     public final static String FOOTER = "MADE BY RALVAREZDEV";

@@ -17,6 +17,6 @@ module practices {
     requires java.xml.crypto;
     requires annotations;
 
-    exports practices.traversinggame to javafx.graphics;
-    exports practices.pencilpi to javafx.graphics;
+    exports practices.gui.traversinggame to javafx.graphics;
+    exports practices.gui.pencilpi to javafx.graphics;
 }

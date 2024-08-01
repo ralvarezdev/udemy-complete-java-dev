@@ -1,15 +1,17 @@
-package practices.traversinggame;
+package practices.gui.traversinggame;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import practices.files.DefaultResourceGetter;
-import practices.traversinggame.commons.Sizes;
-import practices.traversinggame.commons.Texts;
-import practices.traversinggame.commons.assets.Assets;
-import practices.traversinggame.commons.styles.Styles;
-import practices.traversinggame.scenes.MainScene;
-import practices.traversinggame.setters.StageSetter;
+import practices.gui.traversinggame.commons.Sizes;
+import practices.gui.traversinggame.commons.Texts;
+import practices.gui.traversinggame.commons.assets.Assets;
+import practices.gui.traversinggame.commons.styles.Styles;
+import practices.gui.traversinggame.scenes.MainScene;
+import practices.gui.setters.StageSetter;
+
+import java.io.InputStream;
 
 public class TraversingGame extends Application {
 
@@ -22,7 +24,8 @@ public class TraversingGame extends Application {
             DefaultResourceGetter stylesResourceGetter = new DefaultResourceGetter(Styles.class);
 
             // Set window icon
-            StageSetter.setWindowIcon(assetsResourceGetter, stage);
+            InputStream icon = assetsResourceGetter.getResourceAsStream(Assets.Image.WIN);
+            StageSetter.setWindowIcon(stage, icon);
 
             // Load main scene
             Scene scene = MainScene.getScene(assetsResourceGetter, stylesResourceGetter, stage);

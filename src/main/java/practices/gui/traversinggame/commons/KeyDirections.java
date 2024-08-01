@@ -1,4 +1,4 @@
-package practices.traversinggame.commons;
+package practices.gui.traversinggame.commons;
 
 import javafx.scene.input.KeyCode;
 
