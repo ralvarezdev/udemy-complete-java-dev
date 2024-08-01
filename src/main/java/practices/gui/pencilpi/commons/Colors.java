@@ -49,6 +49,7 @@ public enum Colors implements ColorPalette {
         public final static Colors BUTTON_NUMBER_BG = Colors.GREY_3;
 
         public final static Colors RESULT_BG = STAGE_BG;
+        public final static Colors HISTORY_BG = STAGE_BG;
 
         public final static Colors FONT = Colors.GREY_1;
 

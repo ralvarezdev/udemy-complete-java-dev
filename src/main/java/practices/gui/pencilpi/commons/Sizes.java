@@ -12,8 +12,7 @@ public final class Sizes {
         public final static int BUTTONS_GAP=5;
 
         public final static int RESULT_WIDTH = BUTTONS_PER_ROW*Button.OPERATOR_WIDTH + (BUTTONS_PER_ROW-1)*BUTTONS_GAP;
-
-        public final static int PRECISION=3;
+        public final static int HISTORY_WIDTH = RESULT_WIDTH;
 
         private Calculator() {
         }
@@ -64,7 +63,7 @@ public final class Sizes {
 
         public final static int TEXT=12;
 
-        public final static int CALCULATOR_OPERATIONS = 14;
+        public final static int CALCULATOR_HISTORY = 14;
 
         public final static int CALCULATOR_RESULT = 24;
 
@@ -78,6 +77,7 @@ public final class Sizes {
     public static final class TextArea{
 
         public final static int PADDING=10;
+
         private TextArea(){
         }
 
@@ -86,6 +86,7 @@ public final class Sizes {
     public static final class Footer{
         public final static int PADDING_VERTICAL=5;
         public final static int PADDING_HORIZONTAL=15;
+
         private Footer(){
         }
     }
