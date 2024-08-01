@@ -3,7 +3,11 @@ package practices.gui.pencilpi.scenes;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import practices.files.DefaultFileReader;
+import practices.files.DefaultFileWriter;
+import practices.files.FileReader;
 import practices.files.ResourceGetter;
 import practices.gui.pencilpi.commons.Colors;
 import practices.gui.pencilpi.commons.Sizes;
@@ -13,10 +17,18 @@ import practices.gui.setters.LayoutSetter;
 import practices.gui.setters.NodeSetter;
 import practices.gui.setters.StageSetter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Consumer;
 
 public class MainScene {
+    private static File currentFile=null;
+
+    public static void setCurrentFile(File file) {
+        currentFile = file;
+    }
+
     public static Scene getScene(ResourceGetter assetsResourceGetter) {
         // Border pane
         BorderPane borderPane = new BorderPane();
@@ -104,23 +116,102 @@ public class MainScene {
         NodeSetter.setTextAreaStyle(textArea, Sizes.Font.TEXT, Colors.Dark.FONT, Colors.Dark.TEXT_AREA_BG);
         textAreaBorderPane.setCenter(textArea);
 
-        // Labels
-        HBox labelsHBox = new HBox();
-        LayoutSetter.setBgColor(labelsHBox, Colors.Dark.LABEL_BG);
+        // Footer border pane
+        BorderPane footerBorderPane = new BorderPane();
+        footerBorderPane.setPadding(CommonNodes.getInset(Sizes.Footer.PADDING_VERTICAL,Sizes.Footer.PADDING_HORIZONTAL));
+        LayoutSetter.setBgColor(footerBorderPane, Colors.Dark.LABEL_BG);
 
-        // Add labels to the border pane
-        borderPane.setBottom(labelsHBox);
+        // Set footer border pane
+        borderPane.setBottom(footerBorderPane);
 
+        // Data labels HBox
+        HBox dataLabelsHBox = new HBox();
+        dataLabelsHBox.setSpacing(Sizes.Footer.PADDING_HORIZONTAL);
+        
+        // Set data labels HBox
+        footerBorderPane.setLeft(dataLabelsHBox);
+
+        // Data labels
         Label currentLabel = new Label("1:0");
         Label charactersLabel = new Label("Characters: 0");
         Label lineLabel = new Label("Words: 0");
 
+        // Set data labels
+        dataLabelsHBox.getChildren().addAll(currentLabel, charactersLabel, lineLabel);
+        
+        // Made by label
+        Label madeByLabel = new Label("Made by: ralvarezdev");
+
+        // Set made by label
+        footerBorderPane.setRight(madeByLabel);
+
         // Set label styles
-        for(Label label:new Label[]{currentLabel, charactersLabel, lineLabel}) {
-            label.setPadding(CommonNodes.getInset(Sizes.Footer.PADDING_VERTICAL, Sizes.Footer.PADDING_HORIZONTAL));
+        for(Label label:new Label[]{currentLabel, charactersLabel, lineLabel, madeByLabel})
             NodeSetter.setLabelStyle(label, Sizes.Font.TEXT, Colors.Dark.FONT);
-            labelsHBox.getChildren().add(label);
-        }
+
+        // Create open file chooser
+        FileChooser openFileChooser = new FileChooser();
+        openFileChooser.setTitle("Open File");
+
+        // Create save file chooser
+        FileChooser saveFileChooser = new FileChooser();
+        saveFileChooser.setTitle("Save");
+        saveFileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        // Create file reader and file writer
+        DefaultFileReader fileReader = new DefaultFileReader();
+        DefaultFileWriter fileWriter = new DefaultFileWriter();
+
+        // Set new menu item action
+        newMenuItem.setOnAction(_ -> textArea.clear());
+
+        // Set open menu item action
+        openMenuItem.setOnAction(_ -> {
+            // Show open dialog
+            File file=openFileChooser.showOpenDialog(new Stage());
+
+            // Update current file
+            setCurrentFile(file);
+
+            try {
+                StringBuilder content = fileReader.getFileContent(file);
+                textArea.setText(content.toString());
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // Write file lambda expression
+        Runnable writeToFile = () -> {
+            try {
+                fileWriter.writeFileContent(currentFile, textArea.getText(), false);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        // Set save as menu item action
+        saveAsMenuItem.setOnAction(_ -> {
+            // Show save dialog
+            File file=saveFileChooser.showSaveDialog(new Stage());
+
+            // Update current file
+            setCurrentFile(file);
+
+            writeToFile.run();
+        });
+
+        // Set save menu item action
+        saveMenuItem.setOnAction(_ -> {
+            if(currentFile==null) {
+                saveAsMenuItem.fire();
+                return;
+            }
+
+            writeToFile.run();
+        });
 
         // Scene
         return new Scene(borderPane);

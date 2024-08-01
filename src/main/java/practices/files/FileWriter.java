@@ -1,5 +1,6 @@
 package practices.files;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -15,6 +16,9 @@ public interface FileWriter {
 
         writeFileContent(filePath + resourcePath, content, append);
     }
+
+    void writeFileContent(File writeFile, String content, boolean append)
+            throws NullPointerException, IOException;
 
     default void writeSrcDataFileContent(DataPathGetter dataPathGetter, String dataFilename, String content, boolean append)
             throws NullPointerException, IOException {

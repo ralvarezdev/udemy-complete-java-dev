@@ -4,6 +4,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import practices.gui.commons.ColorPalette;
 import practices.gui.pencilpi.commons.Colors;
@@ -13,6 +15,7 @@ import practices.gui.setters.LayoutSetter;
 import practices.gui.setters.NodeSetter;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -77,19 +80,28 @@ public class CalculatorScene {
                 "1", "2", "3", "-",
                 "0", ".", "=", "+"
         };
+        String buttonText;
+
+        // Buttons map
+        HashMap<String, Button> buttonsMap = new HashMap<>();
 
         // Buttons lists
         LinkedList<Button> numberButtons = new LinkedList<>();
         LinkedList<Button> operatorButtons = new LinkedList<>();
 
+        // Set buttons
         for(int i=0;i<buttonsText.length;i++) {
             // Button
-            Button button=new Button(buttonsText[i]);
-            boolean isNumber=buttonsText[i].matches("[0-9]|\\.");
+            buttonText=buttonsText[i];
+            Button button=new Button(buttonText);
+            boolean isNumber=buttonText.matches("[0-9]|\\.");
 
             // Set buttons style
             ColorPalette bgColor=isNumber ? Colors.Dark.BUTTON_NUMBER_BG : Colors.Dark.BUTTON_OPERATOR_BG;
             NodeSetter.setBtnStyle(button, Sizes.Font.CALCULATOR_BUTTONS, Colors.Dark.FONT, Sizes.Button.BORDER_RADIUS, bgColor);
+
+            // Map button
+            buttonsMap.put(buttonText, button);
 
             // Push to stack
             if(isNumber)
@@ -299,6 +311,39 @@ public class CalculatorScene {
         }
 
         // Scene
-        return new Scene(gridPane);
+        Scene scene= new Scene(gridPane);
+
+        // Set default event property to buttons
+        // buttonsMap.get("=").setDefaultButton(true);
+
+        // Event Handler
+        // NOTE: ENTER key isn't working as it's expected to
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, ev -> {
+            //System.out.println(ev);
+
+            switch (ev.getCode()) {
+                case BACK_SPACE -> deleteButton.fire();
+                case DELETE -> ceButton.fire();
+                case ENTER, SPACE, EQUALS -> buttonsMap.get("=").fire();
+                case ADD, PLUS -> buttonsMap.get("+").fire();
+                case SUBTRACT, MINUS -> buttonsMap.get("-").fire();
+                case MULTIPLY, ASTERISK -> buttonsMap.get("*").fire();
+                case DIVIDE, SLASH -> buttonsMap.get("/").fire();
+                case DECIMAL, PERIOD, COMMA -> buttonsMap.get(".").fire();
+                case DIGIT0, NUMPAD0 -> buttonsMap.get("0").fire();
+                case DIGIT1, NUMPAD1 -> buttonsMap.get("1").fire();
+                case DIGIT2, NUMPAD2 -> buttonsMap.get("2").fire();
+                case DIGIT3, NUMPAD3 -> buttonsMap.get("3").fire();
+                case DIGIT4, NUMPAD4 -> buttonsMap.get("4").fire();
+                case DIGIT5, NUMPAD5 -> buttonsMap.get("5").fire();
+                case DIGIT6, NUMPAD6 -> buttonsMap.get("6").fire();
+                case DIGIT7, NUMPAD7 -> buttonsMap.get("7").fire();
+                case DIGIT8, NUMPAD8 -> buttonsMap.get("8").fire();
+                case DIGIT9, NUMPAD9 -> buttonsMap.get("9").fire();
+            }
+            ev.consume();
+        });
+
+        return scene;
     }
 }

@@ -10,10 +10,15 @@ public class DefaultFileReader implements FileReader {
     }
 
     public StringBuilder getFileContent(String filePath) throws NullPointerException, IOException {
-        StringBuilder content = new StringBuilder();
-
         checkFilePath(filePath);
+
         File file = new File(filePath);
+
+        return getFileContent(file);
+    }
+
+    public StringBuilder getFileContent(File file) throws NullPointerException, IOException {
+        StringBuilder content = new StringBuilder();
 
         try (FileInputStream inputStream = new FileInputStream(file)) {
 
@@ -27,7 +32,6 @@ public class DefaultFileReader implements FileReader {
 
                 }
             }
-
         }
 
         return content;

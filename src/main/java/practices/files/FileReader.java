@@ -1,5 +1,6 @@
 package practices.files;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -9,6 +10,8 @@ public interface FileReader {
     default StringBuilder getFileContent(Path filePath) throws NullPointerException, IOException {
         return getFileContent(filePath.toString());
     }
+
+    StringBuilder getFileContent(File file) throws NullPointerException, IOException;
 
     default StringBuilder getResourceFileContent(ResourceGetter resourceGetter, String resourceFilename)
             throws NullPointerException, IOException {
