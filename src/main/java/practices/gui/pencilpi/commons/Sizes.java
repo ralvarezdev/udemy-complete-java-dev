@@ -1,13 +1,31 @@
 package practices.gui.pencilpi.commons;
 
 public final class Sizes {
+    // Calculator sizes
+    public final static class Calculator {
+        public final static int BUTTONS_PER_ROW= 4;
+
+        public final static int PADDING=10;
+
+        public final static int MAIN_GAP=15;
+
+        public final static int BUTTONS_GAP=5;
+
+        public final static int RESULT_WIDTH = BUTTONS_PER_ROW*Button.OPERATOR_WIDTH + (BUTTONS_PER_ROW-1)*BUTTONS_GAP;
+
+        public final static int PRECISION=3;
+
+        private Calculator() {
+        }
+    }
+
     // Stage sizes
     public final static class Stage {
         public final static int MAIN_WIDTH = 800;
         public final static int MAIN_HEIGHT = 600;
 
-        public final static int CALCULATOR_WIDTH = 400;
-        public final static int CALCULATOR_HEIGHT = 600;
+        //public final static int CALCULATOR_WIDTH = 400;
+        //public final static int CALCULATOR_HEIGHT = 600;
 
         private Stage() {
         }
@@ -18,6 +36,20 @@ public final class Sizes {
         public final static int BIG_WIDTH = 400;
         public final static int BIG_HEIGHT = 30;
 
+        public final static int MEDIUM_WIDTH = 200;
+        public final static int MEDIUM_HEIGHT = 30;
+
+        public final static int SMALL_WIDTH = 100;
+        public final static int SMALL_HEIGHT = 30;
+
+        public final static int OPERATOR_WIDTH=50;
+        public final static int OPERATOR_HEIGHT=40;
+
+        public final static int DELETE_WIDTH=OPERATOR_WIDTH*2 + Calculator.BUTTONS_GAP;
+        public final static int DELETE_HEIGHT=35;
+
+        public final static int BORDER_RADIUS=10;
+
         private Button() {
         }
     }
@@ -25,9 +57,18 @@ public final class Sizes {
     // Font sizes
     public static final class Font {
         public final static int TITLE = 16;
+
         public final static int MENU = 14;
+
         public final static int MENU_ITEM = 12;
+
         public final static int TEXT=12;
+
+        public final static int CALCULATOR_OPERATIONS = 14;
+
+        public final static int CALCULATOR_RESULT = 24;
+
+        public final static int CALCULATOR_BUTTONS = 16;
 
         private Font() {
         }

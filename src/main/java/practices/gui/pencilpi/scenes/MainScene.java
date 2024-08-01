@@ -7,9 +7,14 @@ import javafx.stage.Stage;
 import practices.files.ResourceGetter;
 import practices.gui.pencilpi.commons.Colors;
 import practices.gui.pencilpi.commons.Sizes;
+import practices.gui.pencilpi.commons.assets.Assets;
 import practices.gui.setters.CommonNodes;
 import practices.gui.setters.LayoutSetter;
 import practices.gui.setters.NodeSetter;
+import practices.gui.setters.StageSetter;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainScene {
     public static Scene getScene(ResourceGetter assetsResourceGetter) {
@@ -37,7 +42,7 @@ public class MainScene {
 
         // Set menu label styles
         for(Label label:new Label[]{fileLabel, modesLabel})
-            NodeSetter.setLabelStyle(label, Sizes.Font.MENU, Colors.Dark.FONT);
+            NodeSetter.setLabelStyle(label, Sizes.Font.MENU, Colors.Dark.FONT, Colors.Dark.MENU_BG);
 
         // Set menu
         menuBar.getMenus().addAll(fileMenu, modesMenu);
@@ -58,22 +63,34 @@ public class MainScene {
         modesMenu.getItems().addAll(calculatorMenuItem);
 
         // Set menu item styles
+        // I couldn't get the styling to work properly
+        /*
         for(MenuItem menuItem:new MenuItem[]{newMenuItem, openMenuItem, saveMenuItem, saveAsMenuItem, calculatorMenuItem})
-            NodeSetter.setMenuItemStyle(menuItem, Sizes.Font.MENU_ITEM, Colors.Dark.FONT, Colors.Dark.MENU_BG);
+            NodeSetter.setMenuItemStyle(menuItem, Sizes.Font.MENU_ITEM, Colors.Dark.FONT, Colors.Dark.MENU_BG)
+         */
+
 
         // Menu items actions
         calculatorMenuItem.setOnAction(_ -> {
-            // Create a new stage
-            Stage stage = new Stage();
-            Scene scene = CalculatorScene.getScene();
+            try {
+                // Create a new stage
+                Stage stage = new Stage();
+                Scene scene = CalculatorScene.getScene();
 
-            // Set the stage
-            stage.setTitle("Calculator");
-            stage.setMinHeight(Sizes.Stage.CALCULATOR_HEIGHT);
-            stage.setMinWidth(Sizes.Stage.CALCULATOR_WIDTH);
+                // Set window icon
+                InputStream icon = assetsResourceGetter.getResourceAsStream(Assets.Image.WIN);
+                StageSetter.setWindowIcon(stage, icon);
 
-            stage.setScene(scene);
-            stage.show();
+                // Set the stage
+                stage.setTitle("Calculator");
+                stage.setScene(scene);
+                stage.setResizable(false);
+
+                stage.show();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         // Text area border pane
