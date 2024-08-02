@@ -10,11 +10,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import practices.files.ResourceGetter;
 import practices.gui.setters.CommonNodes;
-import practices.gui.traversinggame.commons.*;
-import practices.gui.traversinggame.commons.assets.Assets;
 import practices.gui.setters.LayoutSetter;
-import practices.gui.traversinggame.setters.SceneSetter;
 import practices.gui.setters.NodeSetter;
+import practices.gui.traversinggame.commons.Colors;
+import practices.gui.traversinggame.commons.Coords;
+import practices.gui.traversinggame.commons.KeyDirections;
+import practices.gui.traversinggame.commons.Sizes;
+import practices.gui.traversinggame.commons.assets.Assets;
+import practices.gui.traversinggame.setters.SceneSetter;
 
 import java.io.IOException;
 import java.io.InputStream;

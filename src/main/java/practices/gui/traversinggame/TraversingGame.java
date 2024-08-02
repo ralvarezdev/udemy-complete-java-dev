@@ -4,12 +4,12 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import practices.files.DefaultResourceGetter;
+import practices.gui.setters.StageSetter;
 import practices.gui.traversinggame.commons.Sizes;
 import practices.gui.traversinggame.commons.Texts;
 import practices.gui.traversinggame.commons.assets.Assets;
 import practices.gui.traversinggame.commons.styles.Styles;
 import practices.gui.traversinggame.scenes.MainScene;
-import practices.gui.setters.StageSetter;
 
 import java.io.InputStream;
 

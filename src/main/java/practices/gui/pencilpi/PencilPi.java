@@ -7,6 +7,7 @@ import practices.files.DefaultResourceGetter;
 import practices.gui.pencilpi.commons.Sizes;
 import practices.gui.pencilpi.commons.Texts;
 import practices.gui.pencilpi.commons.assets.Assets;
+import practices.gui.pencilpi.commons.styles.Styles;
 import practices.gui.pencilpi.scenes.MainScene;
 import practices.gui.setters.StageSetter;
 
@@ -19,13 +20,14 @@ public class PencilPi extends Application {
         try {
             // Resource getters
             DefaultResourceGetter assetsResourceGetter = new DefaultResourceGetter(Assets.class);
+            DefaultResourceGetter stylesResourceGetter = new DefaultResourceGetter(Styles.class);
 
             // Set window icon
             InputStream icon = assetsResourceGetter.getResourceAsStream(Assets.Image.WIN);
             StageSetter.setWindowIcon(stage, icon);
 
             // Get the main scene
-            Scene scene = MainScene.getScene(assetsResourceGetter);
+            Scene scene = MainScene.getScene(assetsResourceGetter, stylesResourceGetter);
 
             // Set the stage
             stage.setTitle(Texts.TITLE);

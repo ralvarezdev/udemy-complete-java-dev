@@ -35,7 +35,7 @@ public enum Colors implements ColorPalette {
         return "rgba(%d,%d,%d,%d)".formatted((int) this.color[0], (int) this.color[1], (int) this.color[2],
                 (int) this.color[3]);
     }
-    
+
     // Dark theme
     public final static class Dark {
         public final static Colors STAGE_BG = Colors.GREY_DARK;

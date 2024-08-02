@@ -4,20 +4,20 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import practices.files.ResourceGetter;
 import practices.gui.commons.ColorPalette;
 import practices.gui.pencilpi.commons.Colors;
 import practices.gui.pencilpi.commons.Sizes;
+import practices.gui.pencilpi.setters.SceneSetter;
 import practices.gui.setters.CommonNodes;
 import practices.gui.setters.LayoutSetter;
 import practices.gui.setters.NodeSetter;
 
-import java.text.DecimalFormat;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -28,13 +28,13 @@ public class CalculatorScene {
         currentResult = result;
     }
 
-    public static Scene getScene() {
+    public static Scene getScene(ResourceGetter stylesResourceGetter) throws IOException {
         // Update current result
         updateCurrentResult(0);
 
         // Number and operators stacks
-        final String error="ERROR";
-        LinkedList<String> historyStack=new LinkedList<>();
+        final String error = "ERROR";
+        LinkedList<String> historyStack = new LinkedList<>();
         LinkedList<String> resultStack = new LinkedList<>();
         LinkedList<Double> numbersStack = new LinkedList<>();
         LinkedList<String> operatorsStack = new LinkedList<>();
@@ -67,7 +67,7 @@ public class CalculatorScene {
         buttonsGridPane.add(ceButton, 2, 0, 2, 1);
 
         // Set delete and CE buttons style and size
-        for(Button button:new Button[]{deleteButton, ceButton}) {
+        for (Button button : new Button[]{deleteButton, ceButton}) {
             NodeSetter.setBtnStyle(button, Sizes.Font.CALCULATOR_BUTTONS, Colors.Dark.FONT, Sizes.Button.BORDER_RADIUS, Colors.Dark.BUTTON_DELETE_BG);
             button.setMinWidth(Sizes.Button.DELETE_WIDTH);
             button.setMinHeight(Sizes.Button.DELETE_HEIGHT);
@@ -90,21 +90,21 @@ public class CalculatorScene {
         LinkedList<Button> operatorButtons = new LinkedList<>();
 
         // Set buttons
-        for(int i=0;i<buttonsText.length;i++) {
+        for (int i = 0; i < buttonsText.length; i++) {
             // Button
-            buttonText=buttonsText[i];
-            Button button=new Button(buttonText);
-            boolean isNumber=buttonText.matches("[0-9]|\\.");
+            buttonText = buttonsText[i];
+            Button button = new Button(buttonText);
+            boolean isNumber = buttonText.matches("[0-9]|\\.");
 
             // Set buttons style
-            ColorPalette bgColor=isNumber ? Colors.Dark.BUTTON_NUMBER_BG : Colors.Dark.BUTTON_OPERATOR_BG;
+            ColorPalette bgColor = isNumber ? Colors.Dark.BUTTON_NUMBER_BG : Colors.Dark.BUTTON_OPERATOR_BG;
             NodeSetter.setBtnStyle(button, Sizes.Font.CALCULATOR_BUTTONS, Colors.Dark.FONT, Sizes.Button.BORDER_RADIUS, bgColor);
 
             // Map button
             buttonsMap.put(buttonText, button);
 
             // Push to stack
-            if(isNumber)
+            if (isNumber)
                 numberButtons.push(button);
             else
                 operatorButtons.push(button);
@@ -114,7 +114,7 @@ public class CalculatorScene {
             button.setMinHeight(Sizes.Button.OPERATOR_HEIGHT);
 
             // Set buttons
-            buttonsGridPane.add(button, i%4, i/4+1);
+            buttonsGridPane.add(button, i % 4, i / 4 + 1);
         }
 
         // History label
@@ -136,17 +136,17 @@ public class CalculatorScene {
         gridPane.add(result, 0, 1);
 
         // Get formatted double
-        Function<Double, String> getFormattedDouble= "%.3f"::formatted;
+        Function<Double, String> getFormattedDouble = "%.3f"::formatted;
 
         // Update history label lambda expression
-        Runnable updateHistory=()-> history.setText(String.join("", historyStack));
+        Runnable updateHistory = () -> history.setText(String.join("", historyStack));
 
         // Update result label lambda expression
-        Runnable updateResult=()-> {
-            if(currentResult!=0)
-                result.setText(getFormattedDouble.apply(currentResult)+String.join("", resultStack));
+        Runnable updateResult = () -> {
+            if (currentResult != 0)
+                result.setText(getFormattedDouble.apply(currentResult) + String.join("", resultStack));
 
-            else if(!resultStack.isEmpty())
+            else if (!resultStack.isEmpty())
                 result.setText(String.join("", resultStack));
 
             else
@@ -155,7 +155,7 @@ public class CalculatorScene {
 
         // Set delete button on click event
         deleteButton.setOnAction(_ -> {
-            if(result.getText().equals(error)||resultStack.isEmpty())
+            if (result.getText().equals(error) || resultStack.isEmpty())
                 return;
 
             resultStack.removeLast();
@@ -182,9 +182,9 @@ public class CalculatorScene {
         };
 
         // Set number buttons on click event
-        for(Button button:numberButtons) {
+        for (Button button : numberButtons) {
             button.setOnAction(_ -> {
-                if(result.getText().equals(error))
+                if (result.getText().equals(error))
                     return;
 
                 resultStack.addLast(button.getText());
@@ -194,7 +194,7 @@ public class CalculatorScene {
 
         // Add parsed number lambda expression
         Consumer<String> addParsedNumber = number -> {
-            double parsedNumber=Double.parseDouble(number);
+            double parsedNumber = Double.parseDouble(number);
 
             // Add number to its stack, and to the history stack
             numbersStack.push(parsedNumber);
@@ -202,71 +202,71 @@ public class CalculatorScene {
         };
 
         // Set operator buttons on click event
-        for(Button button:operatorButtons) {
+        for (Button button : operatorButtons) {
             button.setOnAction(_ -> {
-                if(result.getText().equals(error))
+                if (result.getText().equals(error))
                     return;
 
-                if(!button.getText().equals("=")) {
+                if (!button.getText().equals("=")) {
                     resultStack.addLast(button.getText());
                     updateResult.run();
                     return;
                 }
 
                 // Check if the result stack is empty
-                if(resultStack.isEmpty())
+                if (resultStack.isEmpty())
                     return;
 
                 // Convert to postfix notation
-                StringBuilder tempNumber= new StringBuilder();
-                boolean isTempNumberDecimal=false;
+                StringBuilder tempNumber = new StringBuilder();
+                boolean isTempNumberDecimal = false;
 
                 // Clear history
                 historyStack.clear();
 
                 // Parse first number
-                if(currentResult!=0) {
+                if (currentResult != 0) {
                     numbersStack.push(currentResult);
                     historyStack.push(getFormattedDouble.apply(currentResult));
                 }
 
-                for(String token:resultStack) {
+                for (String token : resultStack) {
                     // Check if the token is a number
-                    if(token.matches("[0-9]")) {
+                    if (token.matches("[0-9]")) {
                         tempNumber.append(token);
                         continue;
                     }
 
                     // Check if the token is a decimal
-                    if(token.matches("\\.")) {
-                        if(isTempNumberDecimal) {
+                    if (token.matches("\\.")) {
+                        if (isTempNumberDecimal) {
                             result.setText(error);
                             return;
                         }
 
-                        isTempNumberDecimal=true;
+                        isTempNumberDecimal = true;
                         tempNumber.append(token);
                         continue;
                     }
 
                     // Store temp number, if exists
-                    if(!tempNumber.isEmpty()) {
+                    if (!tempNumber.isEmpty()) {
                         addParsedNumber.accept(tempNumber.toString());
 
                         tempNumber.setLength(0);
-                        isTempNumberDecimal=false;
+                        isTempNumberDecimal = false;
                     }
 
                     // Store operator
-                    while(!operatorsStack.isEmpty() && precedence.apply(operatorsStack.peek())>=precedence.apply(token))
-                            operatorsPostfixStack.addLast(operatorsStack.pop());
+                    while (!operatorsStack.isEmpty() && precedence.apply(operatorsStack.peek()) >= precedence.apply(token))
+                        operatorsPostfixStack.addLast(operatorsStack.pop());
 
                     // Add operator to its postfix stack, and to the history stack
                     operatorsPostfixStack.push(token);
                     historyStack.addLast(token);
                 }
 
-                if(!tempNumber.isEmpty())
+                if (!tempNumber.isEmpty())
                     addParsedNumber.accept(tempNumber.toString());
 
                 //System.out.println(operatorsPostfixStack);
@@ -275,26 +275,26 @@ public class CalculatorScene {
                 // Calculate the result
                 double operationResult;
 
-                while(!operatorsStack.isEmpty())
+                while (!operatorsStack.isEmpty())
                     operatorsPostfixStack.addLast(operatorsStack.pop());
 
-                while(!operatorsPostfixStack.isEmpty()) {
-                    String operator=operatorsPostfixStack.pop();
+                while (!operatorsPostfixStack.isEmpty()) {
+                    String operator = operatorsPostfixStack.pop();
 
-                    if(numbersStack.size()<2) {
+                    if (numbersStack.size() < 2) {
                         result.setText(error);
                         return;
                     }
 
-                    double number1=numbersStack.pop();
-                    double number2=numbersStack.pop();
+                    double number1 = numbersStack.pop();
+                    double number2 = numbersStack.pop();
 
-                    operationResult=switch(operator) {
-                        case "+"->number2+number1;
-                        case "-"->number2-number1;
-                        case "*"->number2*number1;
-                        case "/"-> number2 / number1;
-                        default->0;
+                    operationResult = switch (operator) {
+                        case "+" -> number2 + number1;
+                        case "-" -> number2 - number1;
+                        case "*" -> number2 * number1;
+                        case "/" -> number2 / number1;
+                        default -> 0;
                     };
 
                     numbersStack.push(operationResult);
@@ -311,7 +311,7 @@ public class CalculatorScene {
         }
 
         // Scene
-        Scene scene= new Scene(gridPane);
+        Scene scene = new Scene(gridPane);
 
         // Set default event property to buttons
         // buttonsMap.get("=").setDefaultButton(true);
@@ -343,6 +343,9 @@ public class CalculatorScene {
             }
             ev.consume();
         });
+
+        // Set scene
+        SceneSetter.setDefaultStyles(stylesResourceGetter, scene);
 
         return scene;
     }

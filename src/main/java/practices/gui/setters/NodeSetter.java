@@ -1,8 +1,6 @@
 package practices.gui.setters;
 
 import javafx.scene.control.*;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import practices.gui.commons.ColorPalette;
@@ -48,8 +46,8 @@ public final class NodeSetter {
                 """.formatted(color.getRGBA());
     }
 
-     private static String getBorderStyle(String color, int width) {
-        if(width<0||color==null||color.isEmpty())
+    private static String getBorderStyle(String color, int width) {
+        if (width < 0 || color == null || color.isEmpty())
             return "";
 
         return """
@@ -63,7 +61,7 @@ public final class NodeSetter {
     }
 
     public static String getTransparentBorderColorStyle() {
-        return getBorderStyle("transparent",0);
+        return getBorderStyle("transparent", 0);
     }
 
     public static String getLabelStyle(int fontSize, ColorPalette textColor, ColorPalette bgColor) {
@@ -81,7 +79,7 @@ public final class NodeSetter {
         return getBgColorStyle(bgColor);
     }
 
-    public static String getMenuItemStyle(int fontSize, ColorPalette textColor,ColorPalette bgColor) {
+    public static String getMenuItemStyle(int fontSize, ColorPalette textColor, ColorPalette bgColor) {
         String fontStyle = getFontStyle(fontSize, textColor);
         String bgStyle = getBgColorStyle(bgColor);
 
@@ -97,31 +95,31 @@ public final class NodeSetter {
         return "%s%s%s".formatted(bgStyle, fontStyle, borderRadiusStyle);
     }
 
-    public static String getTextAreaStyle(int fontSize, ColorPalette textColor,ColorPalette bgColor) {
+    public static String getTextAreaStyle(int fontSize, ColorPalette textColor, ColorPalette bgColor) {
         String fontStyle = getFontStyle(fontSize, textColor);
         String bgStyle = getTextAreaBgColorStyle(bgColor);
 
         return "%s%s".formatted(bgStyle, fontStyle);
     }
 
-    public static void setMenuBarStyle(MenuBar menuBar,ColorPalette bgColor) {
-        String menuBarStyle = getMenuBarStyle( bgColor);
+    public static void setMenuBarStyle(MenuBar menuBar, ColorPalette bgColor) {
+        String menuBarStyle = getMenuBarStyle(bgColor);
 
-        if(!menuBarStyle.isEmpty())
+        if (!menuBarStyle.isEmpty())
             menuBar.setStyle(menuBarStyle);
     }
 
     public static void setMenuStyle(Menu menu, ColorPalette bgColor) {
-        String menuStyle = getMenuStyle( bgColor);
+        String menuStyle = getMenuStyle(bgColor);
 
-        if(!menuStyle.isEmpty())
+        if (!menuStyle.isEmpty())
             menu.setStyle(menuStyle);
     }
 
-    public static void setMenuItemStyle(MenuItem menuItem, int fontSize, ColorPalette textColor,ColorPalette bgColor) {
+    public static void setMenuItemStyle(MenuItem menuItem, int fontSize, ColorPalette textColor, ColorPalette bgColor) {
         String menuItemStyle = getMenuItemStyle(fontSize, textColor, bgColor);
 
-        if(!menuItemStyle.isEmpty())
+        if (!menuItemStyle.isEmpty())
             menuItem.setStyle(menuItemStyle);
     }
 
